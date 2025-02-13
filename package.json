@@ -17,7 +17,7 @@
       "prebuild": "node ./build/build.js",
       "build": "tsc && npm run postBuild",
       "postBuild": "node ./build/postBuild.js"
-    }, 
+  }, 
   "dependencies": {
     "@awesomeness-js/utils": "^1.0.13",
     "pg": "^8.13.1"
