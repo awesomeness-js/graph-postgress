@@ -2,8 +2,8 @@
  * Adds multiple vertices to the database.
  * 
  * @example graph.vertices.addMultiple([
- *    { _id: 'this uuid will be used', _type: 'Person', name: 'Alice' },
- *    { _type: 'City', name: 'Wonderland' } // id will be generated
+ *    { id: 'this uuid will be used', type: 'Person', name: 'Alice' },
+ *    { type: 'City', name: 'Wonderland' } // id will be generated
  * ]);
  *
  * @param {Array<Object>} vertices - An array of vertex objects to be added.
@@ -25,21 +25,21 @@ export default async function addVertices(vertices, {
 
     // Validate and prepare vertices
     const data = vertices.map((vertex, i) => {
-        if (typeof vertex._type !== 'string' || vertex._type.length > 420) {
+        if (typeof vertex.type !== 'string' || vertex.type.length > 420) {
             throw {
                 dbError: {
-                    msg: `vertex type (vertex._type) invalid - must be string less than 420 characters (error at index ${i})`,
+                    msg: `vertex type (vertex.type) invalid - must be string less than 420 characters (error at index ${i})`,
                     index: i,
                     vertex
                 }
             };
         }
 
-        if (!isUUID(vertex._id)) {
-            vertex._id = uuid();
+        if (!isUUID(vertex.id)) {
+            vertex.id = uuid();
         }
 
-        return [vertex._id, vertex._type, vertex];
+        return [vertex.id, vertex.type, vertex];
     });
 
     const client = await graph.connect();

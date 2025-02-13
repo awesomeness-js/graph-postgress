@@ -20,11 +20,11 @@ describe('add', async () => {
 		
 		try {
 
-			const result = await add({ _type: 'awesomeness__test', some: 'data' });
-			expect(result).toHaveProperty('_id');
-			expect(result).toHaveProperty('_type');
+			const result = await add({ type: 'awesomeness__test', some: 'data' });
+			expect(result).toHaveProperty('id');
+			expect(result).toHaveProperty('type');
 			expect(result).toHaveProperty('some');
-			cleanUpIds.push(result._id);
+			cleanUpIds.push(result.id);
 
 		} catch (ex) {
 
@@ -38,7 +38,7 @@ describe('add', async () => {
 		
 		const id = uuid();
 
-		let vertex  = { _id: id, _type: 'awesomeness__test', some: 'data' };
+		let vertex  = { id: id, type: 'awesomeness__test', some: 'data' };
 
 		try {
 
@@ -46,9 +46,9 @@ describe('add', async () => {
 
 			expect(result.length).toEqual(1);
 
-			expect(result[0]).toHaveProperty('_id');
-			expect(result[0]._id).toEqual(id);
-			expect(result[0]).toHaveProperty('_type');
+			expect(result[0]).toHaveProperty('id');
+			expect(result[0].id).toEqual(id);
+			expect(result[0]).toHaveProperty('type');
 			expect(result[0]).toHaveProperty('some');
 
 			cleanUpIds.push(id);
@@ -83,18 +83,18 @@ describe('add', async () => {
 
 	it('should delete the vertices', async () => {
 
-		const createResult = await add({ _type: 'awesomeness__test', some: 'data' });
+		const createResult = await add({ type: 'awesomeness__test', some: 'data' });
 
-		expect(createResult).toHaveProperty('_id');
+		expect(createResult).toHaveProperty('id');
 
 		const searchResult = await search('awesomeness__test');
 		let testIds = Object.keys(searchResult);
 
-		const getResult = await get(createResult._id);
+		const getResult = await get(createResult.id);
 
-		expect(getResult).toHaveProperty('_id');
+		expect(getResult).toHaveProperty('id');
 		
-		const deleteResult = await deleteOne(createResult._id);
+		const deleteResult = await deleteOne(createResult.id);
 
 		expect(deleteResult).toBe(true);
 

@@ -77,8 +77,8 @@ export default {
          * Adds a single vertex to the graph.
          *
          * @param {Object} vertex - The vertex object to be added.
-         * @param {string} vertex._type - The type of the vertex.
-         * @param {string} vertex._id - The ID of the vertex. If not provided, a UUID will be generated.
+         * @param {string} vertex.type - The type of the vertex.
+         * @param {string} vertex.id - The ID of the vertex. If not provided, a UUID will be generated.
          * @returns {Promise<Object>} A promise that resolves to the added vertex.
          */
         add: vertex_add,
@@ -86,8 +86,8 @@ export default {
          * Adds multiple vertices to the database.
          * 
          * @example graph.vertices.addMultiple([
-         *    { _id: 'this uuid will be used', _type: 'Person', name: 'Alice' },
-         *    { _type: 'City', name: 'Wonderland' } // id will be generated
+         *    { id: 'this uuid will be used', type: 'Person', name: 'Alice' },
+         *    { type: 'City', name: 'Wonderland' } // id will be generated
          * ]);
          *
          * @param {Array<Object>} vertices - An array of vertex objects to be added.
