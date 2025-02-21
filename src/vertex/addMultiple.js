@@ -9,7 +9,7 @@
  * @param {Array<Object>} vertices - An array of vertex objects to be added.
  * @param {Object} options - Options for the batch insertion.
  * @param {number} [options.batchSize=settings.defaultBatchSize] - The number of vertices to insert in each batch.
- * @returns {Promise<Array>} - An array of inserted vertex IDs.
+ * @returns {Promise<Array>} - An array of inserted vertices with all properties.
  * @throws {Object} - Throws an error if a vertex type is invalid or if the database insertion fails.
  */
 

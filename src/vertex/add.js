@@ -4,6 +4,7 @@
  * @param {Object} vertex - The vertex object to be added.
  * @param {string} vertex.type - The type of the vertex.
  * @param {string} vertex.id - The ID of the vertex. If not provided, a UUID will be generated.
+ * @param {Object} vertex.example - any other properties of the vertex.
  * @returns {Promise<Object>} A promise that resolves to the added vertex.
  */
 import addVertices from './addMultiple.js';
