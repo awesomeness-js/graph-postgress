@@ -21,7 +21,7 @@ async function closePool() {
 
     // whats up?
 
-    console.log('wtf?');
+    console.log('prob ended due to uncaught exception or unhandled rejection');
 }
 
 pool.on('error', async (err, client) => {
