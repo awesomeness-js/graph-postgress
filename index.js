@@ -10,6 +10,7 @@ import _edge_deleteMultiple from './src/edge/deleteMultiple.js';
 import _edge_get from './src/edge/get.js';
 import _edge_getMultiple from './src/edge/getMultiple.js';
 import _edge_search from './src/edge/search.js';
+import _init from './src/init.js';
 import _kv_add from './src/kv/add.js';
 import _kv_addMultiple from './src/kv/addMultiple.js';
 import _kv_delete from './src/kv/delete.js';
@@ -27,8 +28,10 @@ import _vertex_get from './src/vertex/get.js';
 import _vertex_getMultiple from './src/vertex/getMultiple.js';
 import _vertex_search from './src/vertex/search.js';
 
+export { _init as init };
 
 export default {
+    init: _init,
     edge: {
         add: _edge_add,
         addMultiple: _edge_addMultiple,

@@ -5,7 +5,7 @@ declare namespace _default {
     export { settings };
 }
 export default _default;
-declare function init(params: any): {
+declare function init(params: any, test?: boolean): Promise<{
     defaultBatchSize: number;
     keyById: boolean;
     tableName_kv: any;
@@ -19,7 +19,7 @@ declare function init(params: any): {
     max: number;
     idleTimeoutMillis: number;
     connectionTimeoutMillis: number;
-};
+}>;
 declare function set(param: any, value: any): {
     defaultBatchSize: number;
     keyById: boolean;

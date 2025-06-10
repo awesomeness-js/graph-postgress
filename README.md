@@ -5,7 +5,7 @@ import graph from '@awesomeness-js/graph-postgres';
 
 // set up your database connection
 // only needs to happen once, so you can do this in your main / start file
-const db = graph.utils.init({
+const db = graph.init({
 
     host: process.env.AWESOMENESS_GRAPH_POSTGRES_HOST ?? 'localhost',
 	user: process.env.AWESOMENESS_GRAPH_POSTGRES_USER ?? 'postgres',
@@ -25,6 +25,6 @@ const db = graph.utils.init({
     tableName_edges: process.env.AWESOMENESS_GRAPH_TABLE_NAME_EDGES ?? 'awesomeness__edges',
     
 
-});
+}, true); // test mode inserts 1 record into the kv table: awesomenessTest at current time
 
 ```

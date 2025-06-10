@@ -10,6 +10,7 @@ import type _edge_deleteMultiple from './edge/deleteMultiple';
 import type _edge_get from './edge/get';
 import type _edge_getMultiple from './edge/getMultiple';
 import type _edge_search from './edge/search';
+import type _init from './init';
 import type _kv_add from './kv/add';
 import type _kv_addMultiple from './kv/addMultiple';
 import type _kv_delete from './kv/delete';
@@ -27,8 +28,10 @@ import type _vertex_get from './vertex/get';
 import type _vertex_getMultiple from './vertex/getMultiple';
 import type _vertex_search from './vertex/search';
 
+export declare const init: typeof _init;
 
 declare const _default: {
+    init: typeof _init;
     edge: {
         add: typeof _edge_add,
         addMultiple: typeof _edge_addMultiple,
