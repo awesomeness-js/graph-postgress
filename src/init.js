@@ -1,2 +1,2 @@
-import { init } from './utils/config.js';
-export default init;
+import utils from './utils/config.js';
+export default utils.init;
