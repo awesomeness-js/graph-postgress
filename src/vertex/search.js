@@ -40,7 +40,7 @@ export default async function searchVertexTypes(types ,{
     try {
 
         // Execute query with parameterized ids array
-        const res = await graph.query('SELECT id, type, properties FROM vertices WHERE type = ANY($1)', [types]);
+        const res = await graph.query(`SELECT id, type, properties FROM ${settings.tableName_vertices} WHERE type = ANY($1)`, [types]);
 
         if(groupByType){
 

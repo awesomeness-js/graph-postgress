@@ -36,7 +36,7 @@ export default async function searchVertices(ids,{
     try {
 
         // Execute query with parameterized ids array
-        const res = await graph.query('SELECT id, properties FROM vertices WHERE id = ANY($1)', [ids]);
+        const res = await graph.query(`SELECT id, properties FROM ${settings.tableName_vertices} WHERE id = ANY($1)`, [ids]);
 
         const result = res.rows.reduce((acc, row) => { 
             keyById ? acc[row.id] = row.properties : acc.push(row.properties); return acc;

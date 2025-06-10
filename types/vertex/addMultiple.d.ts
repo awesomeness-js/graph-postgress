@@ -1,3 +1,3 @@
 export default function addVertices(vertices: any, { batchSize }?: {
-    batchSize?: any;
+    batchSize?: number;
 }): Promise<any>;

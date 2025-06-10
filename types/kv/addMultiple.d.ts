@@ -1,3 +1,3 @@
 export default function addKVs(dictionary: any, { batchSize }?: {
-    batchSize?: any;
+    batchSize?: number;
 }): Promise<any>;

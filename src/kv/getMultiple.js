@@ -1,4 +1,6 @@
 import graph from '../utils/pool.js';
+import config from '../utils/config.js';
+const settings = config.settings();
 
 export default async function searchKVs(keys) {
     // Validate that keys is an array
@@ -27,7 +29,7 @@ export default async function searchKVs(keys) {
 
     // Prepare SQL query with parameterized placeholders
     const placeholders = keys.map((_, idx) => `$${idx + 1}`).join(", ");
-    const sql = `SELECT * FROM kv WHERE k IN (${placeholders})`;
+    const sql = `SELECT * FROM ${settings.tableName_kv} WHERE k IN (${placeholders})`;
 
     try {
         // Execute query with parameterized keys array

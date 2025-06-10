@@ -37,7 +37,7 @@ export default async function deleteVertices(ids, {
         for (let i = 0; i < ids.length; i += batchSize) {
             const batch = ids.slice(i, i + batchSize);
             const placeholders = batch.map((_, idx) => `$${idx + 1}`).join(", ");
-            const sql = `DELETE FROM vertices WHERE id IN (${placeholders})`;
+            const sql = `DELETE FROM ${settings.tableName_vertices} WHERE id IN (${placeholders})`;
 
             await client.query(sql, batch);
         }

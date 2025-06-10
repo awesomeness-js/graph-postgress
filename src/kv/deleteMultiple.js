@@ -1,6 +1,5 @@
 import graph from '../utils/pool.js';
 import config from '../utils/config.js';
-
 const settings = config.settings();
 
 export default async function deleteKVs(keys, { 
@@ -37,7 +36,7 @@ export default async function deleteKVs(keys, {
         for (let i = 0; i < keys.length; i += batchSize) {
             const batch = keys.slice(i, i + batchSize);
             const placeholders = batch.map((_, idx) => `$${idx + 1}`).join(", ");
-            const sql = `DELETE FROM kv WHERE k IN (${placeholders})`;
+            const sql = `DELETE FROM ${settings.tableName_kv} WHERE k IN (${placeholders})`;
 
             await client.query(sql, batch);
         }

@@ -1,3 +1,3 @@
 export default function searchVertices(ids: any, { keyById, }?: {
-    keyById?: any;
+    keyById?: boolean;
 }): Promise<any>;

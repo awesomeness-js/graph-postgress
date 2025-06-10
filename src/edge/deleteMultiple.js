@@ -1,5 +1,7 @@
 import { isUUID } from '@awesomeness-js/utils';
 import graph from '../utils/pool.js';
+import config from '../utils/config.js';
+const settings = config.settings();
 
 export default async function deleteEdges(edgeIDs) {
     // Validate edgeIDs is an array
@@ -28,7 +30,7 @@ export default async function deleteEdges(edgeIDs) {
 
     // Prepare SQL queries with parameterized placeholders
     const placeholders = edgeIDs.map((_, idx) => `$${idx + 1}`).join(", ");
-    const sql = `DELETE FROM edges WHERE id IN (${placeholders})`;
+    const sql = `DELETE FROM ${settings.tableName_edges} WHERE id IN (${placeholders})`;
 
     try {
         // Execute both delete queries using parameterized edgeIDs array

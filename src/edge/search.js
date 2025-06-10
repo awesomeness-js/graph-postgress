@@ -1,5 +1,7 @@
 import { isUUID } from '@awesomeness-js/utils';
 import graph from '../utils/pool.js';
+import config from '../utils/config.js';
+const settings = config.settings();
 
 export default async function searchEdges(v1s, edgeTypes, v2s, {
     returnProperties = false
@@ -108,7 +110,7 @@ export default async function searchEdges(v1s, edgeTypes, v2s, {
         type,
         v2
     ${ returnProperties ? ', properties' : '' }
-    FROM edges WHERE `;
+    FROM ${settings.tableName_edges} WHERE `;
     const conditions = [];
     const params = [];
 

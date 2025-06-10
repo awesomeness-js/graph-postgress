@@ -1,5 +1,7 @@
 import { uuid, isUUID } from "@awesomeness-js/utils";
 import graph from '../utils/pool.js';
+import config from '../utils/config.js';
+const settings = config.settings();
 
 export default async function addEdges(data, {
 	chunkSize = 5000
@@ -80,7 +82,7 @@ export default async function addEdges(data, {
         }).join(", ");
 
         const sql = `
-            INSERT INTO edges (v1, type, v2, id, properties) 
+            INSERT INTO ${settings.tableName_edges} (v1, type, v2, id, properties) 
             VALUES ${values}
             ON CONFLICT (id) DO UPDATE SET
                 v1 = EXCLUDED.v1,

@@ -1,3 +1,3 @@
 export default function deleteVertices(ids: any, { batchSize }?: {
-    batchSize?: any;
+    batchSize?: number;
 }): Promise<boolean>;

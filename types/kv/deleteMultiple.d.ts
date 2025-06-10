@@ -1,3 +1,3 @@
 export default function deleteKVs(keys: any, { batchSize }?: {
-    batchSize?: any;
+    batchSize?: number;
 }): Promise<boolean>;

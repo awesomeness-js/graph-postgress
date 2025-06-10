@@ -16,7 +16,6 @@
 import graph from '../utils/pool.js';
 import { uuid, isUUID } from "@awesomeness-js/utils";
 import config from '../utils/config.js';
-
 const settings = config.settings();
 
 export default async function addVertices(vertices, { 
@@ -54,7 +53,7 @@ export default async function addVertices(vertices, {
                 .join(", ");
 
             const sql = `
-                INSERT INTO vertices (id, type, properties)
+                INSERT INTO ${settings.tableName_vertices} (id, type, properties)
                 VALUES ${values}
                 ON CONFLICT (id) DO UPDATE SET 
                     type = EXCLUDED.type,

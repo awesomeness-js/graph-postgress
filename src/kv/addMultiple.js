@@ -63,7 +63,7 @@ export default async function addKVs(dictionary, {
                 .join(", ");
 
             const sql = `
-                INSERT INTO kv (k, v)
+                INSERT INTO ${settings.tableName_kv} (k, v)
                 VALUES ${values}
                 ON CONFLICT (k) DO UPDATE SET v = EXCLUDED.v;
             `;

@@ -1,5 +1,7 @@
 import { isUUID } from '@awesomeness-js/utils';
 import graph from '../utils/pool.js';
+import config from '../utils/config.js';
+const settings = config.settings();
 
 export default async function getMultiple(edgeIDs, {
     returnProperties = false
@@ -38,7 +40,7 @@ export default async function getMultiple(edgeIDs, {
         v2
     ${ returnProperties ? ', properties' : '' }
     FROM 
-        edges 
+        ${settings.tableName_edges} 
     WHERE 
         id 
     IN (${placeholders})`;

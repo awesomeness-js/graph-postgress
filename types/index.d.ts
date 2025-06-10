@@ -79,6 +79,7 @@ declare const _default: {
          * @param {Object} vertex - The vertex object to be added.
          * @param {string} vertex.type - The type of the vertex.
          * @param {string} vertex.id - The ID of the vertex. If not provided, a UUID will be generated.
+         * @param {Object} vertex.example - any other properties of the vertex.
          * @returns {Promise<Object>} A promise that resolves to the added vertex.
          */
         add: typeof _vertex_add,
@@ -93,7 +94,7 @@ declare const _default: {
          * @param {Array<Object>} vertices - An array of vertex objects to be added.
          * @param {Object} options - Options for the batch insertion.
          * @param {number} [options.batchSize=settings.defaultBatchSize] - The number of vertices to insert in each batch.
-         * @returns {Promise<Array>} - An array of inserted vertex IDs.
+         * @returns {Promise<Array>} - An array of inserted vertices with all properties.
          * @throws {Object} - Throws an error if a vertex type is invalid or if the database insertion fails.
          */
         addMultiple: typeof _vertex_addMultiple,
