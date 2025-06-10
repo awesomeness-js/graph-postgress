@@ -1,5 +1,3 @@
-import addKV from "../kv/add.js";
-
 let configPostgres = {
 
     // postgres pool settings
@@ -30,7 +28,7 @@ let config = { ...configPostgres, ...configAwesomeness };
 
 // Shared config functions
 
-async function init(params, test = true){
+async function init(params){
 
     if (params && typeof params === 'object') {
         for (const key in params) {
@@ -41,10 +39,6 @@ async function init(params, test = true){
             }
         }
     }
-
-    // test
-    let now = new Date().toISOString();
-    await addKV('awesomenessTest', now);
 
     return config;
 

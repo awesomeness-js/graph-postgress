@@ -3,15 +3,16 @@ import { describe, it, expect } from 'vitest';
 import config from './config.js';
 import createDB from './createDB.js';
 
+
 describe('create db', async () => {
 
     it('should set config', async () => {
 		
 		try {
 
-			let configUpdated = config.init({
+			let configUpdated = await config.init({
 				password: 'abc123',
-			});
+			}, true);
 
 			console.log('configUpdated', configUpdated);
 
