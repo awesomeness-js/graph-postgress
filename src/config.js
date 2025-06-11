@@ -9,7 +9,9 @@ const settings = {
 	max: 10,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 2000,
-    ssl: null,
+    ssl: process.env.NODE_ENV === 'production' ? {
+		rejectUnauthorized: false
+	} : null,
 
     // custom settings
     defaultBatchSize: 2500,
