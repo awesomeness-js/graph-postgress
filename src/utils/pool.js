@@ -1,6 +1,6 @@
 import pg from 'pg';
 const { Pool } = pg;
-import { settings } from './config.js';
+import { settings } from '../config.js';
 
 const pool = new Pool(settings);
 
