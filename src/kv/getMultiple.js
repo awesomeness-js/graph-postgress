@@ -1,8 +1,8 @@
 import graph from '../utils/pool.js';
-import config from '../utils/config.js';
-const settings = config.settings();
+import { settings } from '../config.js';
 
 export default async function searchKVs(keys) {
+    
     // Validate that keys is an array
     if (!Array.isArray(keys)) {
         throw {

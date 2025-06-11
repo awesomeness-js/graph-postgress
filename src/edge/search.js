@@ -1,11 +1,11 @@
 import { isUUID } from '@awesomeness-js/utils';
 import graph from '../utils/pool.js';
-import config from '../utils/config.js';
-const settings = config.settings();
+import { settings } from '../config.js';
 
 export default async function searchEdges(v1s, edgeTypes, v2s, {
     returnProperties = false
 } = {}) {
+
     let v1_is_x = false;
     let v2_is_x = false;
     let edgeType_is_x = false;

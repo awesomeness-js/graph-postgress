@@ -15,9 +15,8 @@
  * @throws {Object} - Throws an error if a key is invalid or if the database insertion fails.
  */
 import graph from '../utils/pool.js';
-import config from '../utils/config.js';
+import { settings } from '../config.js';
 
-const settings = config.settings();
 
 export default async function addKVs(dictionary, { 
     batchSize = settings.defaultBatchSize 

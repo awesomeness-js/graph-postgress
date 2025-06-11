@@ -1,6 +1,5 @@
 import graph from './pool.js';
-import config from './config.js';
-const settings = config.settings();
+import { settings } from './config.js';
 
 export default async function createDB() {
 	

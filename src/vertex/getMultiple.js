@@ -1,8 +1,6 @@
 import { isUUID } from '@awesomeness-js/utils';
 import graph from '../utils/pool.js';
-import config from '../utils/config.js';
-
-const settings = config.settings();
+import { settings } from '../config.js';
 
 export default async function searchVertices(ids,{
     keyById = settings.keyById,

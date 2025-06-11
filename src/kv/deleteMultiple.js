@@ -1,10 +1,10 @@
 import graph from '../utils/pool.js';
-import config from '../utils/config.js';
-const settings = config.settings();
+import { settings } from '../config.js';
 
 export default async function deleteKVs(keys, { 
     batchSize = settings.defaultBatchSize 
 } = {}) {
+
     // Validate that keys is an array
     if (!Array.isArray(keys)) {
         throw {

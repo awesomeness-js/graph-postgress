@@ -15,8 +15,7 @@
 
 import graph from '../utils/pool.js';
 import { uuid, isUUID } from "@awesomeness-js/utils";
-import config from '../utils/config.js';
-const settings = config.settings();
+import { settings } from '../config.js';
 
 export default async function addVertices(vertices, { 
     batchSize = settings.defaultBatchSize 

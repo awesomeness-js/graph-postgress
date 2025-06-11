@@ -1,12 +1,11 @@
 import graph from '../utils/pool.js';
-import config from '../utils/config.js';
+import { settings } from '../config.js';
 import { isUUID } from '@awesomeness-js/utils';
-
-const settings = config.settings();
 
 export default async function deleteVertices(ids, { 
     batchSize = settings.defaultBatchSize 
 } = {}) {
+
     // Validate that ids is an array
     if (!Array.isArray(ids)) {
         throw {
