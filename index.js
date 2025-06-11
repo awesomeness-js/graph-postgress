@@ -3,6 +3,7 @@
  * It consolidates API functions for use in the application.
  * Do not edit manually.
  */
+import _config from './src/config.js';
 import _edge_add from './src/edge/add.js';
 import _edge_addMultiple from './src/edge/addMultiple.js';
 import _edge_delete from './src/edge/delete.js';
@@ -10,14 +11,12 @@ import _edge_deleteMultiple from './src/edge/deleteMultiple.js';
 import _edge_get from './src/edge/get.js';
 import _edge_getMultiple from './src/edge/getMultiple.js';
 import _edge_search from './src/edge/search.js';
-import _init from './src/init.js';
 import _kv_add from './src/kv/add.js';
 import _kv_addMultiple from './src/kv/addMultiple.js';
 import _kv_delete from './src/kv/delete.js';
 import _kv_deleteMultiple from './src/kv/deleteMultiple.js';
 import _kv_get from './src/kv/get.js';
 import _kv_getMultiple from './src/kv/getMultiple.js';
-import _utils_config from './src/utils/config.js';
 import _utils_createDB from './src/utils/createDB.js';
 import _utils_pool from './src/utils/pool.js';
 import _vertex_add from './src/vertex/add.js';
@@ -28,10 +27,10 @@ import _vertex_get from './src/vertex/get.js';
 import _vertex_getMultiple from './src/vertex/getMultiple.js';
 import _vertex_search from './src/vertex/search.js';
 
-export { _init as init };
+export { _config as config };
 
 export default {
-    init: _init,
+    config: _config,
     edge: {
         add: _edge_add,
         addMultiple: _edge_addMultiple,
@@ -71,7 +70,6 @@ export default {
         getMultiple: _kv_getMultiple,
     },
     utils: {
-        config: _utils_config,
         createDB: _utils_createDB,
         pool: _utils_pool,
     },

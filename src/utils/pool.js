@@ -1,9 +1,8 @@
 import pg from 'pg';
 const { Pool } = pg;
-import config from './config.js';
+import { settings } from './config.js';
 
-const configSettings = config.settings();
-const pool = new Pool(configSettings);
+const pool = new Pool(settings);
 
 let isPoolEnded = false;
 

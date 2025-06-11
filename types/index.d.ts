@@ -3,6 +3,7 @@
  * It consolidates API type declarations for use in the application.
  * Do not edit manually.
  */
+import type _config from './config';
 import type _edge_add from './edge/add';
 import type _edge_addMultiple from './edge/addMultiple';
 import type _edge_delete from './edge/delete';
@@ -10,14 +11,12 @@ import type _edge_deleteMultiple from './edge/deleteMultiple';
 import type _edge_get from './edge/get';
 import type _edge_getMultiple from './edge/getMultiple';
 import type _edge_search from './edge/search';
-import type _init from './init';
 import type _kv_add from './kv/add';
 import type _kv_addMultiple from './kv/addMultiple';
 import type _kv_delete from './kv/delete';
 import type _kv_deleteMultiple from './kv/deleteMultiple';
 import type _kv_get from './kv/get';
 import type _kv_getMultiple from './kv/getMultiple';
-import type _utils_config from './utils/config';
 import type _utils_createDB from './utils/createDB';
 import type _utils_pool from './utils/pool';
 import type _vertex_add from './vertex/add';
@@ -28,10 +27,10 @@ import type _vertex_get from './vertex/get';
 import type _vertex_getMultiple from './vertex/getMultiple';
 import type _vertex_search from './vertex/search';
 
-export declare const init: typeof _init;
+export declare const config: typeof _config;
 
 declare const _default: {
-    init: typeof _init;
+    config: typeof _config;
     edge: {
         add: typeof _edge_add,
         addMultiple: typeof _edge_addMultiple,
@@ -71,7 +70,6 @@ declare const _default: {
         getMultiple: typeof _kv_getMultiple,
     },
     utils: {
-        config: typeof _utils_config,
         createDB: typeof _utils_createDB,
         pool: typeof _utils_pool,
     },
