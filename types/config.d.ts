@@ -35,7 +35,7 @@ export function set(k: any, v: any): {
     tableName_vertices: any;
     tableName_edges: any;
 };
-export function init(newSettings: any): {
+export function init(newSettings?: {}): {
     host: any;
     user: any;
     port: number;
