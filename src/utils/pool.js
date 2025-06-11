@@ -50,5 +50,5 @@ process.on('unhandledRejection', async (reason) => {
     await closePool();
 });
 
-
+export default { createPool, closePool, resetPool };
 export { createPool, closePool, resetPool };
