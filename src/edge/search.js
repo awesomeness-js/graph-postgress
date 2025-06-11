@@ -1,11 +1,13 @@
 import { isUUID } from '@awesomeness-js/utils';
-import graph from '../utils/pool.js';
+import { createPool } from '../utils/pool.js';
 import { settings } from '../config.js';
 
 export default async function searchEdges(v1s, edgeTypes, v2s, {
     returnProperties = false
 } = {}) {
 
+    const graph = createPool();
+    
     let v1_is_x = false;
     let v2_is_x = false;
     let edgeType_is_x = false;

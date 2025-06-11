@@ -32,7 +32,7 @@ function set(k, v) {
     return settings;
 }
 
-function init(newSettings) {
+function init(newSettings = {}) {
     for (const key in newSettings) {
         if (!(key in settings)) {
             throw new Error(`Invalid configuration parameter: ${key}`);

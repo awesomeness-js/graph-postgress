@@ -1,8 +1,10 @@
 import { isUUID } from '@awesomeness-js/utils';
-import graph from '../utils/pool.js';
+import { createPool } from '../utils/pool.js';
 import { settings } from '../config.js';
 
 export default async function deleteEdges(edgeIDs) {
+
+    const graph = createPool();
 
     // Validate edgeIDs is an array
     if (!Array.isArray(edgeIDs)) {

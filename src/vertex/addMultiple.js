@@ -13,7 +13,7 @@
  * @throws {Object} - Throws an error if a vertex type is invalid or if the database insertion fails.
  */
 
-import graph from '../utils/pool.js';
+import { createPool } from '../utils/pool.js';
 import { uuid, isUUID } from "@awesomeness-js/utils";
 import { settings } from '../config.js';
 
@@ -21,6 +21,8 @@ export default async function addVertices(vertices, {
     batchSize = settings.defaultBatchSize 
 } = {}) {
 
+    const graph = createPool();
+    
     // Validate and prepare vertices
     const data = vertices.map((vertex, i) => {
         if (typeof vertex.type !== 'string' || vertex.type.length > 420) {

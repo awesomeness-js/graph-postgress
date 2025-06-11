@@ -1,10 +1,12 @@
 import { isUUID } from '@awesomeness-js/utils';
-import graph from '../utils/pool.js';
+import { createPool } from '../utils/pool.js';
 import { settings } from '../config.js';
 
 export default async function searchVertices(ids,{
     keyById = settings.keyById,
 } = {}) {
+
+    const graph = createPool();
 
     // Validate that ids is an array
     if (!Array.isArray(ids)) {

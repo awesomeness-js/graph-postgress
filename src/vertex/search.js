@@ -1,10 +1,12 @@
-import graph from '../utils/pool.js';
+import { createPool } from '../utils/pool.js';
 import { settings } from '../config.js';
 
 export default async function searchVertexTypes(types ,{
     keyById = settings.keyById,
     groupByType = true
 } = {}) {
+
+    const graph = createPool();
 
     if(typeof types === 'string'){
         groupByType = false;

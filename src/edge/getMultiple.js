@@ -1,11 +1,13 @@
 import { isUUID } from '@awesomeness-js/utils';
-import graph from '../utils/pool.js';
+import { createPool } from '../utils/pool.js';
 import { settings } from '../config.js';
 
 export default async function getMultiple(edgeIDs, {
     returnProperties = false
 } = {}) {
 
+    const graph = createPool();
+    
     // Validate that edgeIDs is an array
     if (!Array.isArray(edgeIDs)) {
         throw {

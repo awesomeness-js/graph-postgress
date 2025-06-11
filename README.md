@@ -1,7 +1,9 @@
 # USAGE
 ```js
 
-import graph from '@awesomeness-js/graph-postgres';
+import { createPool }  from '@awesomeness-js/graph-postgres';
+
+const graph = createPool();
 
 // set up your database connection
 // only needs to happen once, so you can do this in your main / start file

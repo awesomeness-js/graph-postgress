@@ -1,7 +1,9 @@
-import graph from '../utils/pool.js';
+import { createPool } from '../utils/pool.js';
 import { settings } from '../config.js';
 
 export default async function searchKVs(keys) {
+
+    const graph = createPool();
     
     // Validate that keys is an array
     if (!Array.isArray(keys)) {

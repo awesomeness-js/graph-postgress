@@ -1,8 +1,10 @@
 import { settings } from '../config.js';
-import graph from './pool.js';
+import { createPool } from './pool.js';
 
 export default async function createDB() {
-	
+
+	const graph = createPool();
+
 	const sql = `
 
 	CREATE TABLE IF NOT EXISTS ${settings.tableName_vertices} (
@@ -63,6 +65,8 @@ export default async function createDB() {
 	`;
 
 	let created = false;
+
+	console.log('graph', graph);
 
 	try {
 		await graph.query(sql);

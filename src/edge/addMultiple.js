@@ -1,11 +1,13 @@
 import { uuid, isUUID } from "@awesomeness-js/utils";
-import graph from '../utils/pool.js';
+import { createPool } from '../utils/pool.js';
 import { settings } from '../config.js';
 
 export default async function addEdges(data, {
 	chunkSize = 5000
 } = {}) {
 
+    const graph = createPool();
+    
     // Data validation function to reduce redundancy
     data.forEach((entry, i) => {
 

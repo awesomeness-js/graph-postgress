@@ -1,9 +1,11 @@
-import graph from '../utils/pool.js';
+import { createPool } from '../utils/pool.js';
 import { settings } from '../config.js';
 
 export default async function deleteKVs(keys, { 
     batchSize = settings.defaultBatchSize 
 } = {}) {
+
+    const graph = createPool();
 
     // Validate that keys is an array
     if (!Array.isArray(keys)) {

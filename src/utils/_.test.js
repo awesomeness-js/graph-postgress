@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
-
-import config from './config.js';
+import config from '../config.js';
 import createDB from './createDB.js';
 
 

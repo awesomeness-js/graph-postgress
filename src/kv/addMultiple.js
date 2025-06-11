@@ -14,13 +14,15 @@
  * @returns {Promise<Object>} - The original dictionary object.
  * @throws {Object} - Throws an error if a key is invalid or if the database insertion fails.
  */
-import graph from '../utils/pool.js';
+import { createPool } from '../utils/pool.js';
 import { settings } from '../config.js';
 
 
 export default async function addKVs(dictionary, { 
     batchSize = settings.defaultBatchSize 
 } = {}) {
+
+    const graph = createPool();
 
     const data = Object.entries(dictionary);
 
