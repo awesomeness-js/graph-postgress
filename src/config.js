@@ -21,32 +21,31 @@ const settings = {
 
 };
 
-function init(newSettings){
+let onChange = null;
 
+function set(k, v) {
+    if (!(k in settings)) {
+        throw new Error(`Invalid configuration parameter: ${k}`);
+    }
+    settings[k] = v;
+    if (onChange) onChange();  // trigger external callback
+    return settings;
+}
+
+function init(newSettings) {
     for (const key in newSettings) {
-
         if (!(key in settings)) {
             throw new Error(`Invalid configuration parameter: ${key}`);
         }
-
-        settings[key] = newSettings[key];  // Mutate the shared config
+        settings[key] = newSettings[key];
     }
-
+    if (onChange) onChange();
     return settings;
-
 }
 
-function set(k, v){
-
-    if (!(k in config)) {
-        throw new Error(`Invalid configuration parameter: ${k}`);
-    }
-
-    config[k] = v;  // Mutate the shared config
-
-    return config;
-
+function setOnChange(fn) {
+    onChange = fn;
 }
 
-export default { set, settings, init };
-export { set, settings, init };
+export default { settings, set, init, setOnChange };
+export { settings, set, init, setOnChange };

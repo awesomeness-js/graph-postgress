@@ -1,32 +1,39 @@
 import pg from 'pg';
 const { Pool } = pg;
-import { settings } from '../config.js';
+import { settings, setOnChange } from '../config.js';
 
-const pool = new Pool(settings);
-
+let pool;
 let isPoolEnded = false;
 
-async function closePool() {
-    
-    if (isPoolEnded) return;
-    isPoolEnded = true;
-
-    try {
-        await pool.end();
-        console.log('PostgreSQL pool has ended gracefully');
-    } catch (err) {
-        console.error('Error closing the pool:', err);
+function createPool() {
+    if (!pool) {
+        pool = new Pool(settings);
+        pool.on('error', async (err) => {
+            console.error('Unexpected error on idle client', err);
+            await closePool();
+        });
     }
-
-    // whats up?
-
-    console.log('prob ended due to uncaught exception or unhandled rejection');
+    return pool;
 }
 
-pool.on('error', async (err, client) => {
-    console.error('Unexpected error on idle client', err);
-    await closePool();
-});
+async function closePool() {
+    if (isPoolEnded || !pool) return;
+    isPoolEnded = true;
+    try {
+        await pool.end();
+        console.log('Pool ended gracefully');
+    } catch (err) {
+        console.error('Error closing pool:', err);
+    }
+}
+
+function resetPool() {
+    if (pool) pool.end();
+    pool = new Pool(settings);
+    console.log('Pool reset with new settings');
+}
+
+setOnChange(resetPool);
 
 process.on('SIGINT', async () => {
     await closePool();
@@ -44,3 +51,4 @@ process.on('unhandledRejection', async (reason) => {
 });
 
 export default pool;
+export { createPool, closePool, resetPool };
