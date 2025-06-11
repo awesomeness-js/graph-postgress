@@ -66,8 +66,6 @@ export default async function createDB() {
 
 	let created = false;
 
-	console.log('graph', graph);
-
 	try {
 		await graph.query(sql);
 		created = true;
