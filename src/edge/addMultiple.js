@@ -11,7 +11,13 @@ export default async function addEdges(data, {
     // Data validation function to reduce redundancy
     data.forEach((entry, i) => {
 
-        const [ v1, type, v2, id, properties ] = entry;
+        const { 
+            v1, 
+            type, 
+            v2, 
+            id, 
+            properties 
+        } = entry;
 
         if (!isUUID(v1) || !isUUID(v2)) {
             throw {
@@ -36,7 +42,7 @@ export default async function addEdges(data, {
                 };
             }
         } else {
-            entry[3] = uuid();
+           entry.id = uuid();
         }
 
         if (typeof type !== 'string' || type.length > 420) {
@@ -58,7 +64,7 @@ export default async function addEdges(data, {
                 };
             }
         } else {
-            entry[4] = null;
+            entry.properties = null;
         }
 
     });
@@ -70,7 +76,14 @@ export default async function addEdges(data, {
         
 		const params = [];
         
-		const values = chunk.map(([v1, type, v2, id, properties], idx) => {
+		const values = chunk.map((
+            {
+                v1, 
+                type, 
+                v2, 
+                id,
+                properties
+            } = d, idx) => {
             const offset = idx * 5;
             params.push(v1, type, v2, id, properties);
             return `(
@@ -102,14 +115,5 @@ export default async function addEdges(data, {
 
     }
 
-    return data.reduce((acc, [ v1, type, v2, id, properties ]) => {
-        acc.push({ 
-            id,
-            v1, 
-            type, 
-            v2,
-            properties
-        });
-        return acc;
-    }, []);
+    return data;
 }

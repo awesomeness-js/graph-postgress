@@ -28,7 +28,14 @@ describe('add', async () => {
 			v1s.push(v1);
 			v2s.push(v2);
 
-			const result = await add( v1, 'awesomeness__test', v2, null, { awesomeness__test: 123 } );
+			const result = await add({
+				v1, 
+				type: 'awesomeness__test', 
+				v2, 
+				properties: { 
+					awesomeness__test: 123 
+				}
+			});
 
 			expect(result?.v1).toBe(v1);
 			expect(result?.v2).toBe(v2);
@@ -57,8 +64,22 @@ describe('add', async () => {
 		try {
 
 			const result = await addMultiple([
-				[v1, 'awesomeness__test', v2, null, { awesomeness__test: 1234 }],
-				[v1, 'awesomeness__test', v2, null, { awesomeness__test: 1235 }],
+				{
+					v1, 
+					type: 'awesomeness__test', 
+					v2, 
+					properties: { 
+						awesomeness__test: 1234
+					}
+				},
+				{
+					v1, 
+					type: 'awesomeness__test', 
+					v2, 
+					properties: { 
+						awesomeness__test: 1235
+					}
+				},
 			]);	
 
 			expect(result.length).toEqual(2);
@@ -106,7 +127,9 @@ describe('add', async () => {
 			if(!v1s.length) { v1s.push(uuid()); }
 			if(!v2s.length) { v2s.push(uuid()); }
 
-			let edges = await search('x', 'awesomeness__test', 'x');
+			let edges = await search({
+				edgeTypes: 'awesomeness__test',
+			});
 	
 			if(edges[0]?.id){
 				const deleteResult = await deleteOne(edges[0].id);
