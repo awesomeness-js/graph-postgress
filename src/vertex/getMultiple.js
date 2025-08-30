@@ -1,3 +1,12 @@
+/**
+ * Searches for multiple vertices in the database by their UUIDs.
+ *
+ * @param {string[]} ids - An array of UUID strings representing the vertex IDs to search for.
+ * @param {Object} [options] - Optional configuration object.
+ * @param {boolean} [options.keyById=settings.keyById] - If true, returns an object keyed by vertex ID; otherwise, returns an array of properties.
+ * @returns {Promise<Object<string, any>|any[]>} - A promise that resolves to either an object keyed by vertex ID or an array of vertex properties.
+ * @throws {Object} Throws an error if `ids` is not an array, if any ID is not a valid UUID, or if the database query fails.
+ */
 import { isUUID } from '@awesomeness-js/utils';
 import { createPool } from '../utils/pool.js';
 import { settings } from '../config.js';

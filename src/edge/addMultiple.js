@@ -1,3 +1,18 @@
+
+/**
+ * Adds multiple edges to the graph database in chunks, with validation and upsert logic.
+ *
+ * @param {Array<Object>} data - Array of edge objects to add. Each object should have:
+ *   @param {string} data[].v1 - UUID of the source vertex.
+ *   @param {string} data[].type - Type of the edge (string, max length 420).
+ *   @param {string} data[].v2 - UUID of the target vertex.
+ *   @param {string} [data[].id] - Optional UUID for the edge. If not provided, a new UUID is generated.
+ *   @param {Object|null} [data[].properties] - Optional properties object for the edge.
+ * @param {Object} [options] - Optional configuration object.
+ * @param {number} [options.chunkSize=5000] - Number of edges to insert per batch.
+ * @returns {Promise<Array<Object>>} The array of edge objects (with generated IDs if not provided).
+ * @throws {Object} Throws an error object with `dbError` or `multipleEdgeCreationFailed` on validation or query failure.
+ */
 import { uuid, isUUID } from "@awesomeness-js/utils";
 import { createPool } from '../utils/pool.js';
 import { settings } from '../config.js';

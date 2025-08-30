@@ -1,5 +1,3 @@
-
-
 /**
  * Adds multiple key-value pairs to the database.
  * 

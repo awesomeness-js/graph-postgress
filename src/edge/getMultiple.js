@@ -1,3 +1,12 @@
+/**
+ * Retrieves multiple edges from the database by their UUIDs.
+ *
+ * @param {string[]} edgeIDs - An array of edge UUIDs to retrieve.
+ * @param {Object} [options] - Optional parameters.
+ * @param {boolean} [options.returnProperties=false] - Whether to include the 'properties' field in the result.
+ * @returns {Promise<Object[]>} A promise that resolves to an array of edge objects.
+ * @throws {Object} Throws an error object if validation fails or if the database query fails.
+ */
 import { isUUID } from '@awesomeness-js/utils';
 import { createPool } from '../utils/pool.js';
 import { settings } from '../config.js';

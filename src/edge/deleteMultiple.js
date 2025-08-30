@@ -1,3 +1,14 @@
+
+/**
+ * Deletes multiple edges from the database by their UUIDs.
+ *
+ * @param {string[]} edgeIDs - An array of edge UUIDs to delete.
+ * @returns {Promise<boolean>} Resolves to true if deletion is successful.
+ * @throws {Object} Throws an error object if:
+ *   - `edgeIDs` is not an array of UUIDs.
+ *   - Any element in `edgeIDs` is not a valid UUID.
+ *   - The database operation fails.
+ */
 import { isUUID } from '@awesomeness-js/utils';
 import { createPool } from '../utils/pool.js';
 import { settings } from '../config.js';
