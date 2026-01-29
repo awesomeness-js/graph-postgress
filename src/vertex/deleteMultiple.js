@@ -1,3 +1,14 @@
+/**
+ * Deletes multiple vertices from the database by their UUIDs in batches.
+ *
+ * @async
+ * @function
+ * @param {string[]} ids - An array of UUID strings representing the vertex IDs to delete.
+ * @param {Object} [options] - Optional configuration object.
+ * @param {number} [options.batchSize=settings.defaultBatchSize] - The number of IDs to delete per batch.
+ * @throws {Object} Throws an error if `ids` is not an array, if any ID is not a valid UUID, or if the database operation fails.
+ * @returns {Promise<boolean>} Returns `true` if all vertices are deleted successfully.
+ */
 import { createPool } from '../utils/pool.js';
 import { settings } from '../config.js';
 import { isUUID } from '@awesomeness-js/utils';

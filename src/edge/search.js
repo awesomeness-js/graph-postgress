@@ -1,3 +1,16 @@
+/**
+ * Searches for edges in the graph database based on provided criteria.
+ *
+ * @async
+ * @function
+ * @param {Object} [options={}] - The search options.
+ * @param {string|string[]|null} [options.v1s=null] - Vertex 1 UUID(s) to filter by. Can be a single UUID, an array of UUIDs, or null for wildcard.
+ * @param {string|string[]|null} [options.edgeTypes=null] - Edge type(s) to filter by. Can be a single string, an array of strings, or null for wildcard.
+ * @param {string|string[]|null} [options.v2s=null] - Vertex 2 UUID(s) to filter by. Can be a single UUID, an array of UUIDs, or null for wildcard.
+ * @param {boolean} [options.returnProperties=false] - Whether to include edge properties in the result.
+ * @returns {Promise<Object[]>} Resolves to an array of edge objects matching the search criteria.
+ * @throws {Object} Throws an error object with a `dbError` property if input validation fails, or with a `searchEdgesFailed` property if the database query fails.
+ */
 import { isUUID } from '@awesomeness-js/utils';
 import { createPool } from '../utils/pool.js';
 import { settings } from '../config.js';

@@ -14,6 +14,9 @@ export namespace settings {
     let max: number;
     let idleTimeoutMillis: number;
     let connectionTimeoutMillis: number;
+    namespace ssl {
+        let rejectUnauthorized: boolean;
+    }
     let defaultBatchSize: number;
     let keyById: boolean;
     let tableName_kv: any;
@@ -29,6 +32,9 @@ export function set(k: any, v: any): {
     max: number;
     idleTimeoutMillis: number;
     connectionTimeoutMillis: number;
+    ssl: {
+        rejectUnauthorized: boolean;
+    };
     defaultBatchSize: number;
     keyById: boolean;
     tableName_kv: any;
@@ -44,6 +50,9 @@ export function init(newSettings?: {}): {
     max: number;
     idleTimeoutMillis: number;
     connectionTimeoutMillis: number;
+    ssl: {
+        rejectUnauthorized: boolean;
+    };
     defaultBatchSize: number;
     keyById: boolean;
     tableName_kv: any;

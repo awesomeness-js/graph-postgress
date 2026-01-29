@@ -1,3 +1,14 @@
+/**
+ * Deletes multiple key-value entries from the database in batches.
+ *
+ * @async
+ * @param {string[]} keys - An array of keys (UUIDs or strings) to delete.
+ * @param {Object} [options] - Optional settings.
+ * @param {number} [options.batchSize=settings.defaultBatchSize] - Number of keys to delete per batch.
+ * @throws {Object} Throws an error if `keys` is not an array or contains invalid keys.
+ * @throws {Object} Throws an error if the database operation fails.
+ * @returns {Promise<boolean>} Returns true if all keys are deleted successfully.
+ */
 import { createPool } from '../utils/pool.js';
 import { settings } from '../config.js';
 

@@ -1,3 +1,13 @@
+/**
+ * Searches for vertex types in the database and returns their properties.
+ *
+ * @param {string|string[]} types - The vertex type(s) to search for. Can be a single string or an array of strings.
+ * @param {Object} [options] - Optional configuration object.
+ * @param {boolean} [options.keyById=settings.keyById] - If true, results are keyed by vertex ID.
+ * @param {boolean} [options.groupByType=true] - If true, results are grouped by type.
+ * @returns {Promise<Object|Array>} - Returns a Promise that resolves to an object or array containing the vertex properties, grouped and/or keyed according to the options.
+ * @throws {Object} Throws an error object if input validation fails or if the database query fails.
+ */
 import { createPool } from '../utils/pool.js';
 import { settings } from '../config.js';
 
