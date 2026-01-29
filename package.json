@@ -1,6 +1,6 @@
 {
   "name": "@awesomeness-js/graph-postgres",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Awesomeness - Simple Graph using Postgres",
   "repository": {
     "type": "git",
@@ -15,10 +15,10 @@
     "access": "public"
   },
   "scripts": {
-      "prebuild": "node ./build/build.js",
-      "build": "tsc && npm run postBuild",
-      "postBuild": "node ./build/postBuild.js"
-  }, 
+    "prebuild": "node ./build/build.js",
+    "build": "tsc && npm run postBuild",
+    "postBuild": "node ./build/postBuild.js"
+  },
   "dependencies": {
     "@awesomeness-js/utils": "^1.0.13",
     "pg": "^8.13.1"
