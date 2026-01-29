@@ -1,6 +1,6 @@
 {
   "name": "@awesomeness-js/graph-postgres",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Awesomeness - Simple Graph using Postgres",
   "repository": {
     "type": "git",
