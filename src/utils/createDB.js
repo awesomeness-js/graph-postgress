@@ -67,15 +67,20 @@ export default async function createDB() {
 	let created = false;
 
 	try {
+
 		await graph.query(sql);
 		created = true;
+	
 	} catch (err) {
+
 		throw({
 			reason: 'Error creating database',
 			message: err.message,
 			error: err
 		});
+	
 	}
 
 	return { created };
+
 }

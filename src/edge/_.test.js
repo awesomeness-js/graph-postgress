@@ -18,7 +18,7 @@ describe('add', async () => {
 	const v1s = [];
 	const v2s = [];
 
-    it('should call add with the correct arguments', async () => {
+	it('should call add with the correct arguments', async () => {
 		
 		try {
 
@@ -42,7 +42,7 @@ describe('add', async () => {
 			expect(result?.type).toBe('awesomeness__test');
 
 
-			cleanUpIds.push(result.id)
+			cleanUpIds.push(result.id);
 			
 
 		} catch (ex) {
@@ -51,7 +51,7 @@ describe('add', async () => {
 
 		}
 
-    });
+	});
 
 	it('should call addMultiple with the correct arguments', async () => {
 		
@@ -106,15 +106,98 @@ describe('add', async () => {
 		}
 
 
-    });
+	});
+
+	it('should reuse id and update when addMultiple unique=true', async () => {
+
+		const v1 = uuid();
+		const v2 = uuid();
+		const type = `awesomeness__test__unique__${Date.now()}`;
+
+		v1s.push(v1);
+		v2s.push(v2);
+
+		try {
+
+			const first = await addMultiple([
+				{
+					v1,
+					type,
+					v2,
+					properties: {
+						awesomeness__test: 'first'
+					}
+				}
+			], {
+				unique: true
+			});
+
+			const second = await addMultiple([
+				{
+					v1,
+					type,
+					v2,
+					properties: {
+						awesomeness__test: 'second'
+					}
+				}
+			], {
+				unique: true
+			});
+
+			expect(second[0].id).toBe(first[0].id);
+
+			const duplicateChunk = await addMultiple([
+				{
+					v1,
+					type,
+					v2,
+					properties: {
+						awesomeness__test: 'third'
+					}
+				},
+				{
+					v1,
+					type,
+					v2,
+					properties: {
+						awesomeness__test: 'fourth'
+					}
+				}
+			], {
+				unique: true
+			});
+
+			expect(duplicateChunk[0].id).toBe(first[0].id);
+			expect(duplicateChunk[1].id).toBe(first[0].id);
+
+			const edge = await get(first[0].id, {
+				returnProperties: true
+			});
+
+			expect(edge?.id).toBe(first[0].id);
+			expect(edge?.properties?.awesomeness__test).toBe('fourth');
+
+			cleanUpIds.push(first[0].id);
+
+		} catch (ex) {
+
+			console.error(ex);
+			expect(ex).toBeNull();
+
+		}
+
+	});
 
 	it('should get the edges', async () => {
 
 		let edge = await get(cleanUpIds[0]);
+
 		expect(edge).toHaveProperty('id');
 
 
 		let edges = await getMultiple(cleanUpIds);
+
 		expect(edges.length).toBeGreaterThan(0);
 
 	});
@@ -124,27 +207,44 @@ describe('add', async () => {
 		
 		try {
 
-			if(!v1s.length) { v1s.push(uuid()); }
-			if(!v2s.length) { v2s.push(uuid()); }
+			if(!v1s.length) {
+
+				v1s.push(uuid()); 
+
+			}
+
+			if(!v2s.length) {
+
+				v2s.push(uuid()); 
+
+			}
 
 			let edges = await search({
 				edgeTypes: 'awesomeness__test',
 			});
 	
 			if(edges[0]?.id){
+
 				const deleteResult = await deleteOne(edges[0].id);
+
 				expect(deleteResult).toBe(true);
+			
 			}
 
 			if(edges[1]?.id){
-				const allIds = edges.map(edge => edge.id);
+
+				const allIds = edges.map((edge) => edge.id);
 				const deleteMultipleResult = await deleteMultiple(allIds);
+
 				expect(deleteMultipleResult).toBe(true);
+			
 			}
 			
 		} catch (ex) {
+
 			console.error(ex);
 			expect(ex).toBeNull();
+		
 		}
 
 

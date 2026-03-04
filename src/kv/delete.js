@@ -5,6 +5,9 @@
  * @returns {Promise<*>} A promise that resolves with the result of the deletion operation.
  */
 import deleteMultiple from "./deleteMultiple.js";
+
 export default async function deleteKV(key){
-	return await deleteMultiple([key]);
+
+	return await deleteMultiple([ key ]);
+
 }

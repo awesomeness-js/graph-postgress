@@ -6,9 +6,13 @@
 * @returns {Promise<void>} A promise that resolves when the key-value pair has been added.
 */ 
 import addMultiple from './addMultiple.js';
+
 async function graphAddKv(key, value){
-	await addMultiple({ [key]: value});
+
+	await addMultiple({ [key]: value });
+	
 	return value;
+
 }
 
 export default graphAddKv;

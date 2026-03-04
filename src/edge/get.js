@@ -7,11 +7,12 @@
  * @returns {Promise<Object|undefined>} A promise that resolves to the edge object if found, or undefined if not found.
  */
 import getMultiple from './getMultiple.js';
+
 export default async function getEdge(id, {
-    returnProperties = false
+	returnProperties = false
 } = {}) {
 	
-	let edges = await getMultiple([id], {
+	let edges = await getMultiple([ id ], {
 		returnProperties
 	});
 

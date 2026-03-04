@@ -15,45 +15,56 @@ import { settings } from '../config.js';
 
 export default async function deleteEdges(edgeIDs) {
 
-    const graph = createPool();
+	const graph = createPool();
 
-    // Validate edgeIDs is an array
-    if (!Array.isArray(edgeIDs)) {
-        throw {
-            dbError: {
-                msg: 'edge ids invalid - must be array of UUIDs',
-                edgeIDs
-            }
-        };
-    }
+	// Validate edgeIDs is an array
+	if (!Array.isArray(edgeIDs)) {
 
-    // Validate each edgeID in the array
-    edgeIDs.forEach((id, i) => {
-        if (!isUUID(id)) {
-            throw {
-                dbError: {
-                    msg: `edge id invalid - must be a UUID (error at index ${i})`,
-                    edgeIDs,
-                    key: i,
-                    value: id
-                }
-            };
-        }
-    });
+		throw {
+			dbError: {
+				msg: 'edge ids invalid - must be array of UUIDs',
+				edgeIDs
+			}
+		};
+	
+	}
 
-    // Prepare SQL queries with parameterized placeholders
-    const placeholders = edgeIDs.map((_, idx) => `$${idx + 1}`).join(", ");
-    const sql = `DELETE FROM ${settings.tableName_edges} WHERE id IN (${placeholders})`;
+	// Validate each edgeID in the array
+	edgeIDs.forEach((id, i) => {
 
-    try {
-        // Execute both delete queries using parameterized edgeIDs array
-        await graph.query(sql, edgeIDs);
-    } catch (ex) {
-        throw {
-            multipleEdgeDeleteFailed: ex.stack,
-            edgeIDs
-        };
-    }
+		if (!isUUID(id)) {
 
-    return true;
+			throw {
+				dbError: {
+					msg: `edge id invalid - must be a UUID (error at index ${i})`,
+					edgeIDs,
+					key: i,
+					value: id
+				}
+			};
+		
+		}
+	
+	});
+
+	// Prepare SQL queries with parameterized placeholders
+	const placeholders = edgeIDs.map((_, idx) => `$${idx + 1}`).join(", ");
+	const sql = `DELETE FROM ${settings.tableName_edges} WHERE id IN (${placeholders})`;
+
+	try {
+
+		// Execute both delete queries using parameterized edgeIDs array
+		await graph.query(sql, edgeIDs);
+	
+	} catch (ex) {
+
+		throw {
+			multipleEdgeDeleteFailed: ex.stack,
+			edgeIDs
+		};
+	
+	}
+
+	return true;
+
 }

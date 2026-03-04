@@ -7,15 +7,15 @@ import deleteOne from './delete.js';
 import deleteMultiple from './deleteMultiple.js';
 
 import getMultiple from './getMultiple.js';
-import deleteMultiple from './deleteMultiple.js';
 
 describe('add', async () => {
 
-    it('should call add with the correct arguments', async () => {
+	it('should call add with the correct arguments', async () => {
 		
 		try {
 
 			const result = await add('awesomeness__test', { some: 'data' });
+
 			expect(result).toEqual({ some: 'data' });	
 
 		} catch (ex) {
@@ -25,7 +25,7 @@ describe('add', async () => {
 
 		}
 
-    });
+	});
 
 	it('should call addMultiple with the correct arguments', async () => {
 		
@@ -35,7 +35,7 @@ describe('add', async () => {
 			awesomeness__testString: "some string",
 			awesomeness__testNumber: 123,
 			awesomeness__testBoolean: true,
-			awesomeness__testArray: [1, 2, 3],
+			awesomeness__testArray: [ 1, 2, 3 ],
 			awesomeness__delete0: "delete0",
 			awesomeness__delete1: "delete1",
 			awesomeness__delete2: "delete2",
@@ -44,6 +44,7 @@ describe('add', async () => {
 		try {
 
 			const result = await addMultiple(kvs);	
+
 			expect(result).toEqual(kvs);
 		
 		} catch (ex) {
@@ -54,7 +55,7 @@ describe('add', async () => {
 		}
 
 
-    });
+	});
 
 	it('should get the correct value from the key', async () => {
 
@@ -64,7 +65,7 @@ describe('add', async () => {
 			awesomeness__testString: "some string",
 			awesomeness__testNumber: 123,
 			awesomeness__testBoolean: true,
-			awesomeness__testArray: [1, 2, 3],
+			awesomeness__testArray: [ 1, 2, 3 ],
 			awesomeness__delete0: "delete0",
 			awesomeness__delete1: "delete1",
 			awesomeness__delete2: "delete2",

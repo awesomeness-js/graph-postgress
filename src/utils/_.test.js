@@ -5,7 +5,7 @@ import createDB from './createDB.js';
 
 describe('create db', async () => {
 
-    it('should set config', async () => {
+	it('should set config', async () => {
 		
 		try {
 
@@ -22,7 +22,7 @@ describe('create db', async () => {
 
 		}
 
-    });
+	});
 
 
 	it('should create db', async () => {

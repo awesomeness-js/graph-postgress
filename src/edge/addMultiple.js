@@ -10,107 +10,204 @@
  *   @param {Object|null} [data[].properties] - Optional properties object for the edge.
  * @param {Object} [options] - Optional configuration object.
  * @param {number} [options.chunkSize=5000] - Number of edges to insert per batch.
+ * @param {boolean} [options.unique=false] - If true, enforces uniqueness by (v1, type, v2) and reuses existing IDs.
  * @returns {Promise<Array<Object>>} The array of edge objects (with generated IDs if not provided).
  * @throws {Object} Throws an error object with `dbError` or `multipleEdgeCreationFailed` on validation or query failure.
  */
-import { uuid, isUUID } from "@awesomeness-js/utils";
+import { uuid, isUUID, each } from "@awesomeness-js/utils";
 import { createPool } from '../utils/pool.js';
 import { settings } from '../config.js';
 
 export default async function addEdges(data, {
-	chunkSize = 5000
+	chunkSize = 5000,
+	unique = false
 } = {}) {
 
-    const graph = createPool();
+	const graph = createPool();
     
-    // Data validation function to reduce redundancy
-    data.forEach((entry, i) => {
+	// Data validation function to reduce redundancy
+	each(data, (entry, i) => {
 
-        const { 
-            v1, 
-            type, 
-            v2, 
-            id, 
-            properties 
-        } = entry;
+		const { 
+			v1, 
+			type, 
+			v2, 
+			id, 
+			properties 
+		} = entry;
 
-        if (!isUUID(v1) || !isUUID(v2)) {
-            throw {
-                dbError: {
-                    msg: `edge ids invalid - must be array of uuids (${!isUUID(v1) ? 'v1' : 'v2'} issue)`,
-                    data,
-                    key: i,
-                    value: entry,
-                }
-            };
-        }
+		if (!isUUID(v1) || !isUUID(v2)) {
 
-        if(id){
-            if(!isUUID(id)){
-                throw {
-                    dbError: {
-                        msg: `edge id invalid - must be uuid`,
-                        data,
-                        key: i,
-                        value: entry,
-                    }
-                };
-            }
-        } else {
-           entry.id = uuid();
-        }
+			throw {
+				dbError: {
+					msg: `edge ids invalid - must be array of uuids (${!isUUID(v1) ? 'v1' : 'v2'} issue)`,
+					data,
+					key: i,
+					value: entry,
+				}
+			};
 
-        if (typeof type !== 'string' || type.length > 420) {
-            throw {
-                dbError: {
-                    msg: `edge type invalid - ${typeof type !== 'string' ? 'must be string' : 'max length 420'}`,
-                    type
-                }
-            };
-        }
+		}
 
-        if(properties){
-            if(typeof properties !== 'object'){
-                throw {
-                    dbError: {
-                        msg: `edge properties invalid - must be object`,
-                        properties
-                    }
-                };
-            }
-        } else {
-            entry.properties = null;
-        }
+		if(id){
 
-    });
+			if(!isUUID(id)){
+
+				throw {
+					dbError: {
+						msg: `edge id invalid - must be uuid`,
+						data,
+						key: i,
+						value: entry,
+					}
+				};
+			
+			}
+
+		} else {
+
+			entry.id = uuid();
+
+		}
+
+		if (typeof type !== 'string' || type.length > 420) {
+
+			throw {
+				dbError: {
+					msg: `edge type invalid - ${typeof type !== 'string' ? 'must be string' : 'max length 420'}`,
+					type
+				}
+			};
+
+		}
+
+		if(properties){
+
+			if(typeof properties !== 'object'){
+
+				throw {
+					dbError: {
+						msg: `edge properties invalid - must be object`,
+						properties
+					}
+				};
+
+			}
+
+		} else {
+
+			entry.properties = null;
+
+		}
+
+	});
 
 
-    for (let i = 0; i < data.length; i += chunkSize) {
+	const edgeKey = ({
+		v1, 
+		type, 
+		v2 
+	}) => JSON.stringify([ v1, type, v2 ]);
 
-        const chunk = data.slice(i, i + chunkSize);
+	for (let i = 0; i < data.length; i += chunkSize) {
+
+		const chunk = data.slice(i, i + chunkSize);
+
+		let rows = chunk;
+
+		if (unique) {
+
+			const rowDictionary = Object.create(null);
+            
+			each(chunk, (row) => {
+
+				rowDictionary[edgeKey(row)] = row;
+			
+			});
+
+			rows = Object.values(rowDictionary);
+
+		}
+
+		if (unique && rows.length) {
+
+			const lookupParams = [];
+			const lookupValuesParts = [];
+
+			each(rows, ({
+				v1, 
+				type, 
+				v2 
+			}, idx) => {
+
+				const offset = idx * 3;
+
+				lookupParams.push(v1, type, v2);
+				lookupValuesParts.push(`($${offset + 1}, $${offset + 2}, $${offset + 3})`);
+			
+			});
+			const lookupValues = lookupValuesParts.join(', ');
+
+			const lookupSql = `
+                SELECT id, v1, type, v2
+                FROM ${settings.tableName_edges}
+                WHERE (v1, type, v2) IN (${lookupValues});
+            `;
+
+			const existingRows = await graph.query(lookupSql, lookupParams);
+			const existingByKey = Object.create(null);
+
+			each(existingRows.rows, (row) => {
+
+				existingByKey[edgeKey({
+					v1: row.v1,
+					type: row.type,
+					v2: row.v2 
+				})] = row.id;
+			
+			});
+
+			each(rows, (entry) => {
+
+				const existingId = existingByKey[edgeKey(entry)];
+
+				if (existingId) {
+
+					entry.id = existingId;
+				
+				}
+			
+			});
+		
+		}
         
 		const params = [];
         
-		const values = chunk.map((
-            {
-                v1, 
-                type, 
-                v2, 
-                id,
-                properties
-            } = d, idx) => {
-            const offset = idx * 5;
-            params.push(v1, type, v2, id, properties);
-            return `(
+		const valueParts = [];
+
+		each(rows, ({
+			v1,
+			type,
+			v2,
+			id,
+			properties
+		}, idx) => {
+
+			const offset = idx * 5;
+
+			params.push(v1, type, v2, id, properties);
+			valueParts.push(`(
                 $${offset + 1}, 
                 $${offset + 2}, 
                 $${offset + 3}, 
                 $${offset + 4},
                 $${offset + 5}
-            )`;
-        }).join(", ");
+            )`);
+		
+		});
+		const values = valueParts.join(", ");
 
-        const sql = `
+		const sql = `
             INSERT INTO ${settings.tableName_edges} (v1, type, v2, id, properties) 
             VALUES ${values}
             ON CONFLICT (id) DO UPDATE SET
@@ -120,15 +217,45 @@ export default async function addEdges(data, {
                 properties = EXCLUDED.properties;
         `;
 
-        try {
-            await graph.query(sql, params);
-        } catch (ex) {
-            throw {
-                multipleEdgeCreationFailed: ex.stack,
-            };
-        }
+		try {
 
-    }
+			await graph.query(sql, params);
 
-    return data;
+			if (unique) {
+
+				const idByKey = Object.create(null);
+
+				each(rows, (row) => {
+
+					idByKey[edgeKey(row)] = row.id;
+				
+				});
+
+				each(chunk, (entry) => {
+
+					const matchedId = idByKey[edgeKey(entry)];
+
+
+					if (matchedId) {
+
+						entry.id = matchedId;
+					
+					}
+				
+				});
+			
+			}
+		
+		} catch (ex) {
+
+			throw {
+				multipleEdgeCreationFailed: ex.stack,
+			};
+		
+		}
+
+	}
+
+	return data;
+
 }

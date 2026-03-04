@@ -7,7 +7,12 @@
  * @returns {Promise<*>} The value associated with the given key, or undefined if not found.
  */
 import getMultiple from './getMultiple.js';
+
 export default async function searchKV(key) {
-	const kvs = await getMultiple([key]);
+
+	const kvs = await getMultiple([ key ]);
+
+	
 	return kvs[key];
+
 }

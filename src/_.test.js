@@ -14,7 +14,7 @@ describe('test settings', async () => {
 
 		expect(settings.password).toBe(newSettings.password);
 
-    });
+	});
 
 	
 

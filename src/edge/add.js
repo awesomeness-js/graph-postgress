@@ -13,19 +13,25 @@
  */
 import addEdges from './addMultiple.js';
 import { uuid } from '@awesomeness-js/utils';
+
 export default async function addEdge({
-    v1, 
-    type,
-    v2, 
-    id = uuid(), 
-    properties = null
+	v1, 
+	type,
+	v2, 
+	id = uuid(), 
+	properties = null,
+	unique = false
 }){
-    let edges = await addEdges([{
-        v1, 
-        type, 
-        v2, 
-        id, 
-        properties
-    }]);
-    return edges[0];
+
+	let edges = await addEdges([ {
+		v1, 
+		type, 
+		v2, 
+		id, 
+		properties
+	} ], { unique });
+
+    
+	return edges[0];
+
 }

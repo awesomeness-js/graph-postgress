@@ -56,6 +56,7 @@ export default {
          *   @param {Object|null} [data[].properties] - Optional properties object for the edge.
          * @param {Object} [options] - Optional configuration object.
          * @param {number} [options.chunkSize=5000] - Number of edges to insert per batch.
+         * @param {boolean} [options.unique=false] - If true, enforces uniqueness by (v1, type, v2) and reuses existing IDs.
          * @returns {Promise<Array<Object>>} The array of edge objects (with generated IDs if not provided).
          * @throws {Object} Throws an error object with `dbError` or `multipleEdgeCreationFailed` on validation or query failure.
          */
