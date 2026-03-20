@@ -32,9 +32,14 @@ export default async function addEdges(data, {
 			v1, 
 			type, 
 			v2, 
-			id, 
+			id,
+			to,
+			from,
 			properties 
 		} = entry;
+
+		if(to && !v2) entry.v2 = to;
+		if(from && !v1) entry.v1 = from;
 
 		if (!isUUID(v1) || !isUUID(v2)) {
 

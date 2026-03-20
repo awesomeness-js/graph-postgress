@@ -18,10 +18,15 @@ export default async function addEdge({
 	v1, 
 	type,
 	v2, 
+	to,
+	from,
 	id = uuid(), 
 	properties = null,
 	unique = false
 }){
+
+	if(to && !v2) v2 = to;
+	if(from && !v1) v1 = from;
 
 	let edges = await addEdges([ {
 		v1, 

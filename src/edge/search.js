@@ -16,11 +16,22 @@ import { createPool } from '../utils/pool.js';
 import { settings } from '../config.js';
 
 export default async function searchEdges({
+	from = null,
+	to = null,
 	v1s = null, 
-	edgeTypes = null, 
+	edgeTypes = null, // alias
+	type = null, 
+	types = null, // alias
 	v2s = null,
 	returnProperties = false
 } = {}) {
+
+	if(type && !edgeTypes) edgeTypes = type;
+	if(types && !edgeTypes) edgeTypes = types;
+
+	// new names
+	if(to && !v2s) v2s = to;
+	if(from && !v1s) v1s = from;
 
 	const graph = createPool();
     
