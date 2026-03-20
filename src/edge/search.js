@@ -24,6 +24,7 @@ export default async function searchEdges({
 	to = null,
 	v1s = null, 
 	edgeTypes = null, // alias
+	edgeType = null, // alias
 	type = null, 
 	types = null, // alias
 	v2s = null,
@@ -36,6 +37,9 @@ export default async function searchEdges({
 
 	if(type && !edgeTypes) edgeTypes = type;
 	if(types && !edgeTypes) edgeTypes = types;
+    
+	// safety
+	if(edgeType && !edgeTypes) edgeTypes = types;
 
 	// new names
 	if(to && !v2s) v2s = to;
