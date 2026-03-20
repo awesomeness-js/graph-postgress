@@ -108,6 +108,241 @@ describe('add', async () => {
 
 	});
 
+	it('should support filterProperties, sortBy, limit, and startIndex', async () => {
+
+		const type = `awesomeness__test__search__${Date.now()}`;
+		const v1 = uuid();
+
+		try {
+
+			const inserted = await addMultiple([
+				{
+					v1,
+					type,
+					v2: uuid(),
+					properties: {
+						group: 'search_opts',
+						rank: '001'
+					}
+				},
+				{
+					v1,
+					type,
+					v2: uuid(),
+					properties: {
+						group: 'search_opts',
+						rank: '002'
+					}
+				},
+				{
+					v1,
+					type,
+					v2: uuid(),
+					properties: {
+						group: 'search_opts',
+						rank: '003'
+					}
+				}
+			]);
+
+			cleanUpIds.push(...inserted.map((edge) => edge.id));
+
+			const edges = await search({
+				edgeTypes: type,
+				returnProperties: true,
+				filterProperties: {
+					group: 'search_opts'
+				},
+				sortBy: {
+					property: 'rank',
+					direction: 'desc'
+				},
+				startIndex: 1,
+				limit: 2
+			});
+
+			expect(edges.length).toBe(2);
+			expect(edges[0]?.properties?.rank).toBe('002');
+			expect(edges[1]?.properties?.rank).toBe('001');
+
+		} catch (ex) {
+
+			console.error(ex);
+			expect(ex).toBeNull();
+
+		}
+
+	});
+
+	it('should support filterProperties date operators for created (after, before, between, lt, gt, lte, gte)', async () => {
+
+		const type = `awesomeness__test__created__${Date.now()}`;
+		const v1 = uuid();
+
+		try {
+
+			const inserted = await addMultiple([
+				{
+					v1,
+					type,
+					v2: uuid(),
+					properties: {
+						suite: 'created_ops',
+						created: '2026-01-10T00:00:00Z'
+					}
+				},
+				{
+					v1,
+					type,
+					v2: uuid(),
+					properties: {
+						suite: 'created_ops',
+						created: '2026-01-20T00:00:00Z'
+					}
+				},
+				{
+					v1,
+					type,
+					v2: uuid(),
+					properties: {
+						suite: 'created_ops',
+						created: '2026-01-30T00:00:00Z'
+					}
+				}
+			]);
+
+			cleanUpIds.push(...inserted.map((edge) => edge.id));
+
+			const afterResults = await search({
+				edgeTypes: type,
+				returnProperties: true,
+				sortBy: {
+					property: 'created',
+					direction: 'asc' 
+				},
+				filterProperties: {
+					suite: 'created_ops',
+					created: { after: '2026-01-15T00:00:00Z' }
+				}
+			});
+
+			expect(afterResults.length).toBe(2);
+			expect(afterResults[0]?.properties?.created).toBe('2026-01-20T00:00:00Z');
+			expect(afterResults[1]?.properties?.created).toBe('2026-01-30T00:00:00Z');
+
+			const beforeResults = await search({
+				edgeTypes: type,
+				returnProperties: true,
+				sortBy: {
+					property: 'created',
+					direction: 'asc' 
+				},
+				filterProperties: {
+					suite: 'created_ops',
+					created: { before: '2026-01-25T00:00:00Z' }
+				}
+			});
+
+			expect(beforeResults.length).toBe(2);
+			expect(beforeResults[0]?.properties?.created).toBe('2026-01-10T00:00:00Z');
+			expect(beforeResults[1]?.properties?.created).toBe('2026-01-20T00:00:00Z');
+
+			const betweenResults = await search({
+				edgeTypes: type,
+				returnProperties: true,
+				sortBy: {
+					property: 'created',
+					direction: 'asc' 
+				},
+				filterProperties: {
+					suite: 'created_ops',
+					created: {
+						between: [
+							'2026-01-15T00:00:00Z',
+							'2026-01-25T00:00:00Z'
+						]
+					}
+				}
+			});
+
+			expect(betweenResults.length).toBe(1);
+			expect(betweenResults[0]?.properties?.created).toBe('2026-01-20T00:00:00Z');
+
+			const gtResults = await search({
+				edgeTypes: type,
+				returnProperties: true,
+				sortBy: {
+					property: 'created',
+					direction: 'asc'
+				},
+				filterProperties: {
+					suite: 'created_ops',
+					created: { gt: '2026-01-20T00:00:00Z' }
+				}
+			});
+
+			expect(gtResults.length).toBe(1);
+			expect(gtResults[0]?.properties?.created).toBe('2026-01-30T00:00:00Z');
+
+			const ltResults = await search({
+				edgeTypes: type,
+				returnProperties: true,
+				sortBy: {
+					property: 'created',
+					direction: 'asc'
+				},
+				filterProperties: {
+					suite: 'created_ops',
+					created: { lt: '2026-01-20T00:00:00Z' }
+				}
+			});
+
+			expect(ltResults.length).toBe(1);
+			expect(ltResults[0]?.properties?.created).toBe('2026-01-10T00:00:00Z');
+
+			const gteResults = await search({
+				edgeTypes: type,
+				returnProperties: true,
+				sortBy: {
+					property: 'created',
+					direction: 'asc'
+				},
+				filterProperties: {
+					suite: 'created_ops',
+					created: { gte: '2026-01-20T00:00:00Z' }
+				}
+			});
+
+			expect(gteResults.length).toBe(2);
+			expect(gteResults[0]?.properties?.created).toBe('2026-01-20T00:00:00Z');
+			expect(gteResults[1]?.properties?.created).toBe('2026-01-30T00:00:00Z');
+
+			const lteResults = await search({
+				edgeTypes: type,
+				returnProperties: true,
+				sortBy: {
+					property: 'created',
+					direction: 'asc'
+				},
+				filterProperties: {
+					suite: 'created_ops',
+					created: { lte: '2026-01-20T00:00:00Z' }
+				}
+			});
+
+			expect(lteResults.length).toBe(2);
+			expect(lteResults[0]?.properties?.created).toBe('2026-01-10T00:00:00Z');
+			expect(lteResults[1]?.properties?.created).toBe('2026-01-20T00:00:00Z');
+
+		} catch (ex) {
+
+			console.error(ex);
+			expect(ex).toBeNull();
+
+		}
+
+	});
+
 	it('should reuse id and update when addMultiple unique=true', async () => {
 
 		const v1 = uuid();

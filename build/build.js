@@ -1,10 +1,10 @@
 import { build } from '@awesomeness-js/utils';
 
 build({
-    src: './src',
-    dest: './index.js',
-    dts: false,
-    ignore: [
-        '*.test.js',
-    ]
+	src: './src',
+	dest: './index.js',
+	dts: false,
+	ignore: [
+		'*.test.js',
+	]
 });

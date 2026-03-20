@@ -7,6 +7,10 @@
  * @param {string|string[]|null} [options.v1s=null] - Vertex 1 UUID(s) to filter by. Can be a single UUID, an array of UUIDs, or null for wildcard.
  * @param {string|string[]|null} [options.edgeTypes=null] - Edge type(s) to filter by. Can be a single string, an array of strings, or null for wildcard.
  * @param {string|string[]|null} [options.v2s=null] - Vertex 2 UUID(s) to filter by. Can be a single UUID, an array of UUIDs, or null for wildcard.
+ * @param {number|null} [options.limit=null] - Max number of rows to return.
+ * @param {number} [options.startIndex=0] - Number of rows to skip.
+ * @param {string|Object|null} [options.sortBy=null] - Sort configuration. Supports string formats (`id`, `-id`, `id:desc`) or object formats (`{ field, direction }`, `{ property, direction }`).
+ * @param {Object|null} [options.filterProperties=null] - JSONB containment filter applied to the `properties` column.
  * @param {boolean} [options.returnProperties=false] - Whether to include edge properties in the result.
  * @returns {Promise<Object[]>} Resolves to an array of edge objects matching the search criteria.
  * @throws {Object} Throws an error object with a `dbError` property if input validation fails, or with a `searchEdgesFailed` property if the database query fails.
@@ -23,6 +27,10 @@ export default async function searchEdges({
 	type = null, 
 	types = null, // alias
 	v2s = null,
+	limit = null,
+	startIndex = 0,
+	sortBy = null,
+	filterProperties = null,
 	returnProperties = false
 } = {}) {
 
@@ -178,6 +186,183 @@ export default async function searchEdges({
 	
 	}
 
+	if (limit !== null) {
+
+		if (!Number.isInteger(limit) || limit <= 0) {
+
+			throw {
+				dbError: {
+					msg: 'limit invalid - must be a positive integer or null',
+					limit
+				}
+			};
+
+		}
+
+	}
+
+	if (!Number.isInteger(startIndex) || startIndex < 0) {
+
+		throw {
+			dbError: {
+				msg: 'startIndex invalid - must be an integer >= 0',
+				startIndex
+			}
+		};
+
+	}
+
+	if (
+		filterProperties !== null
+        && (
+        	typeof filterProperties !== 'object'
+            || Array.isArray(filterProperties)
+        )
+	) {
+
+		throw {
+			dbError: {
+				msg: 'filterProperties invalid - must be an object or null',
+				filterProperties
+			}
+		};
+
+	}
+
+	const dateFilterOps = [ 'after', 'before', 'between', 'gt', 'gte', 'lt', 'lte' ];
+
+	const filterContainsDateOps = (value) => {
+
+		if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+
+		return dateFilterOps.some((op) => Object.prototype.hasOwnProperty.call(value, op));
+
+	};
+
+	let sortField = null;
+	let sortDirection = 'ASC';
+	let sortPropertyKey = null;
+
+	if (sortBy !== null) {
+
+		const validFields = [ 'id', 'v1', 'type', 'v2' ];
+
+		if (typeof sortBy === 'string') {
+
+			let field = sortBy;
+
+			if (field.startsWith('-')) {
+
+				sortDirection = 'DESC';
+				field = field.slice(1);
+
+			}
+
+			if (field.includes(':')) {
+
+				const [ rawField, rawDirection ] = field.split(':');
+
+				field = rawField;
+
+				if (rawDirection?.toLowerCase() === 'desc') sortDirection = 'DESC';
+				if (rawDirection?.toLowerCase() === 'asc') sortDirection = 'ASC';
+
+			}
+
+			if (!validFields.includes(field)) {
+
+				throw {
+					dbError: {
+						msg: 'sortBy invalid - field must be one of id, v1, type, v2',
+						sortBy
+					}
+				};
+
+			}
+
+			sortField = field;
+
+		} else if (
+			typeof sortBy === 'object'
+            && !Array.isArray(sortBy)
+		) {
+
+			const rawDirection = sortBy.direction;
+
+
+			if (rawDirection && typeof rawDirection !== 'string') {
+
+				throw {
+					dbError: {
+						msg: 'sortBy invalid - direction must be "asc" or "desc"',
+						sortBy
+					}
+				};
+
+			}
+
+			if (rawDirection?.toLowerCase() === 'desc') sortDirection = 'DESC';
+			if (rawDirection?.toLowerCase() === 'asc') sortDirection = 'ASC';
+
+			const field = sortBy.field;
+			const propertyKey = sortBy.property || sortBy.propertyKey;
+
+			if (propertyKey !== undefined) {
+
+				if (typeof propertyKey !== 'string' || !propertyKey.length) {
+
+					throw {
+						dbError: {
+							msg: 'sortBy invalid - property must be a non-empty string',
+							sortBy
+						}
+					};
+
+				}
+
+				sortPropertyKey = propertyKey;
+
+			} else {
+
+				if (!validFields.includes(field)) {
+
+					throw {
+						dbError: {
+							msg: 'sortBy invalid - field must be one of id, v1, type, v2',
+							sortBy
+						}
+					};
+
+				}
+
+				sortField = field;
+
+			}
+
+			if (propertyKey === undefined && !field) {
+
+				throw {
+					dbError: {
+						msg: 'sortBy invalid - object must include field or property',
+						sortBy
+					}
+				};
+
+			}
+
+		} else {
+
+			throw {
+				dbError: {
+					msg: 'sortBy invalid - must be a string, object, or null',
+					sortBy
+				}
+			};
+
+		}
+
+	}
+
 	// Build query dynamically
 	let query = `
     SELECT 
@@ -211,13 +396,192 @@ export default async function searchEdges({
 	
 	}
 
+	if (filterProperties !== null) {
+
+		const containmentFilter = {};
+
+		Object.entries(filterProperties).forEach(([ propertyKey, propertyValue ]) => {
+
+			if (!filterContainsDateOps(propertyValue)) {
+
+				containmentFilter[propertyKey] = propertyValue;
+				
+				return;
+
+			}
+
+			if (propertyValue.after !== undefined || propertyValue.gt !== undefined) {
+
+				const afterValue = propertyValue.after ?? propertyValue.gt;
+
+				if (typeof afterValue !== 'string' || !afterValue.length) {
+
+					throw {
+						dbError: {
+							msg: `filterProperties.${propertyKey} invalid - after/gt must be a non-empty date string`,
+							filterProperties
+						}
+					};
+
+				}
+
+				params.push(propertyKey);
+				const keyParam = params.length;
+
+				params.push(afterValue);
+				const valueParam = params.length;
+
+				conditions.push(`(properties->>$${keyParam})::timestamptz > $${valueParam}::timestamptz`);
+
+			}
+
+			if (propertyValue.gte !== undefined) {
+
+				if (typeof propertyValue.gte !== 'string' || !propertyValue.gte.length) {
+
+					throw {
+						dbError: {
+							msg: `filterProperties.${propertyKey} invalid - gte must be a non-empty date string`,
+							filterProperties
+						}
+					};
+
+				}
+
+				params.push(propertyKey);
+				const keyParam = params.length;
+
+				params.push(propertyValue.gte);
+				const valueParam = params.length;
+
+				conditions.push(`(properties->>$${keyParam})::timestamptz >= $${valueParam}::timestamptz`);
+
+			}
+
+			if (propertyValue.before !== undefined || propertyValue.lt !== undefined) {
+
+				const beforeValue = propertyValue.before ?? propertyValue.lt;
+
+				if (typeof beforeValue !== 'string' || !beforeValue.length) {
+
+					throw {
+						dbError: {
+							msg: `filterProperties.${propertyKey} invalid - before/lt must be a non-empty date string`,
+							filterProperties
+						}
+					};
+
+				}
+
+				params.push(propertyKey);
+				const keyParam = params.length;
+
+				params.push(beforeValue);
+				const valueParam = params.length;
+
+				conditions.push(`(properties->>$${keyParam})::timestamptz < $${valueParam}::timestamptz`);
+
+			}
+
+			if (propertyValue.lte !== undefined) {
+
+				if (typeof propertyValue.lte !== 'string' || !propertyValue.lte.length) {
+
+					throw {
+						dbError: {
+							msg: `filterProperties.${propertyKey} invalid - lte must be a non-empty date string`,
+							filterProperties
+						}
+					};
+
+				}
+
+				params.push(propertyKey);
+				const keyParam = params.length;
+
+				params.push(propertyValue.lte);
+				const valueParam = params.length;
+
+				conditions.push(`(properties->>$${keyParam})::timestamptz <= $${valueParam}::timestamptz`);
+
+			}
+
+			if (propertyValue.between !== undefined) {
+
+				if (
+					!Array.isArray(propertyValue.between)
+					|| propertyValue.between.length !== 2
+					|| typeof propertyValue.between[0] !== 'string'
+					|| typeof propertyValue.between[1] !== 'string'
+					|| !propertyValue.between[0].length
+					|| !propertyValue.between[1].length
+				) {
+
+					throw {
+						dbError: {
+							msg: `filterProperties.${propertyKey} invalid - between must be [fromDate, toDate]`,
+							filterProperties
+						}
+					};
+
+				}
+
+				params.push(propertyKey);
+				const keyParam = params.length;
+
+				params.push(propertyValue.between[0]);
+				const fromParam = params.length;
+
+				params.push(propertyValue.between[1]);
+				const toParam = params.length;
+
+				conditions.push(`(properties->>$${keyParam})::timestamptz BETWEEN $${fromParam}::timestamptz AND $${toParam}::timestamptz`);
+
+			}
+
+		});
+
+		if (Object.keys(containmentFilter).length) {
+
+			conditions.push(`properties @> $${params.length + 1}::jsonb`);
+			params.push(JSON.stringify(containmentFilter));
+
+		}
+
+	}
+
 	query += conditions.join(' AND ');
+
+	if (sortPropertyKey !== null) {
+
+		params.push(sortPropertyKey);
+		query += ` ORDER BY COALESCE(properties->>$${params.length}, '') ${sortDirection}`;
+
+	} else if (sortField) {
+
+		query += ` ORDER BY ${sortField} ${sortDirection}`;
+
+	}
+
+	if (limit !== null) {
+
+		params.push(limit);
+		query += ` LIMIT $${params.length}`;
+
+	}
+
+	if (startIndex > 0) {
+
+		params.push(startIndex);
+		query += ` OFFSET $${params.length}`;
+
+	}
 
 	try {
 
 		const res = await graph.query(query, params);
 
-       
+		
 		return res.rows;
 	
 	} catch (ex) {

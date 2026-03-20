@@ -107,6 +107,10 @@ declare const _default: {
          * @param {string|string[]|null} [options.v1s=null] - Vertex 1 UUID(s) to filter by. Can be a single UUID, an array of UUIDs, or null for wildcard.
          * @param {string|string[]|null} [options.edgeTypes=null] - Edge type(s) to filter by. Can be a single string, an array of strings, or null for wildcard.
          * @param {string|string[]|null} [options.v2s=null] - Vertex 2 UUID(s) to filter by. Can be a single UUID, an array of UUIDs, or null for wildcard.
+         * @param {number|null} [options.limit=null] - Max number of rows to return.
+         * @param {number} [options.startIndex=0] - Number of rows to skip.
+         * @param {string|Object|null} [options.sortBy=null] - Sort configuration. Supports string formats (`id`, `-id`, `id:desc`) or object formats (`{ field, direction }`, `{ property, direction }`).
+         * @param {Object|null} [options.filterProperties=null] - JSONB containment filter applied to the `properties` column.
          * @param {boolean} [options.returnProperties=false] - Whether to include edge properties in the result.
          * @returns {Promise<Object[]>} Resolves to an array of edge objects matching the search criteria.
          * @throws {Object} Throws an error object with a `dbError` property if input validation fails, or with a `searchEdgesFailed` property if the database query fails.
