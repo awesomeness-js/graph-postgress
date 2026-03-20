@@ -18,42 +18,52 @@ import { uuid, isUUID } from "@awesomeness-js/utils";
 import { settings } from '../config.js';
 
 export default async function addVertices(vertices, { 
-    batchSize = settings.defaultBatchSize 
+	batchSize = settings.defaultBatchSize 
 } = {}) {
 
-    const graph = createPool();
+	const graph = createPool();
     
-    // Validate and prepare vertices
-    const data = vertices.map((vertex, i) => {
-        if (typeof vertex.type !== 'string' || vertex.type.length > 420) {
-            throw {
-                dbError: {
-                    msg: `vertex type (vertex.type) invalid - must be string less than 420 characters (error at index ${i})`,
-                    index: i,
-                    vertex
-                }
-            };
-        }
+	// Validate and prepare vertices
+	const data = vertices.map((vertex, i) => {
 
-        if (!isUUID(vertex.id)) {
-            vertex.id = uuid();
-        }
+		if (typeof vertex.type !== 'string' || vertex.type.length > 420) {
 
-        return [vertex.id, vertex.type, vertex];
-    });
+			throw {
+				dbError: {
+					msg: `vertex type (vertex.type) invalid - must be string less than 420 characters (error at index ${i})`,
+					index: i,
+					vertex
+				}
+			};
+		
+		}
 
-    const client = await graph.connect();
-    try {
-        for (let i = 0; i < data.length; i += batchSize) {
-            const batch = data.slice(i, i + batchSize);
+		if (!isUUID(vertex.id)) {
 
-            // Prepare parameters and values for bulk insert
-            const params = batch.flat();
-            const values = batch
-                .map((_, idx) => `($${idx * 3 + 1}, $${idx * 3 + 2}, $${idx * 3 + 3}::jsonb)`)
-                .join(", ");
+			vertex.id = uuid();
+		
+		}
 
-            const sql = `
+		return [ vertex.id, vertex.type, vertex ];
+	
+	});
+
+	const client = await graph.connect();
+
+
+	try {
+
+		for (let i = 0; i < data.length; i += batchSize) {
+
+			const batch = data.slice(i, i + batchSize);
+
+			// Prepare parameters and values for bulk insert
+			const params = batch.flat();
+			const values = batch
+				.map((_, idx) => `($${idx * 3 + 1}, $${idx * 3 + 2}, $${idx * 3 + 3}::jsonb)`)
+				.join(", ");
+
+			const sql = `
                 INSERT INTO ${settings.tableName_vertices} (id, type, properties)
                 VALUES ${values}
                 ON CONFLICT (id) DO UPDATE SET 
@@ -61,16 +71,23 @@ export default async function addVertices(vertices, {
                     properties = EXCLUDED.properties;
             `;
 
-            await client.query(sql, params);
-        }
-    } catch (ex) {
-        throw {
-            verticesCreationFailed: ex.stack,
-            data
-        };
-    } finally {
-        client.release(); // Always release the client back to the pool
-    }
+			await client.query(sql, params);
+		
+		}
+	
+	} catch (ex) {
 
-    return vertices;
+		throw {
+			verticesCreationFailed: ex.stack,
+			data
+		};
+	
+	} finally {
+
+		client.release(); // Always release the client back to the pool
+	
+	}
+
+	return vertices;
+
 }

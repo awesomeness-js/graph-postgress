@@ -18,7 +18,10 @@ import _kv_deleteMultiple from './src/kv/deleteMultiple.js';
 import _kv_get from './src/kv/get.js';
 import _kv_getMultiple from './src/kv/getMultiple.js';
 import _utils_createDB from './src/utils/createDB.js';
+import _utils_createIndex from './src/utils/createIndex.js';
+import _utils_listIndexes from './src/utils/listIndexes.js';
 import _utils_pool from './src/utils/pool.js';
+import _utils_removeIndex from './src/utils/removeIndex.js';
 import _vertex_add from './src/vertex/add.js';
 import _vertex_addMultiple from './src/vertex/addMultiple.js';
 import _vertex_delete from './src/vertex/delete.js';
@@ -185,7 +188,32 @@ export default {
     },
     utils: {
         createDB: _utils_createDB,
+        /**
+         * Creates an expression index on a properties key path for edges/vertices table.
+         *
+         * @param {Object} [options]
+         * @param {'edges'|'vertices'} [options.target='edges'] - Table target by logical name.
+         * @param {string|null} [options.indexName=null] - Optional index name.
+         * @param {string} options.propertyKey - Required properties key path (supports dot notation, e.g. "createdBy" or "something.deeper").
+         * @returns {Promise<{ created: boolean, indexName: string, tableName: string }>}
+         */
+        createIndex: _utils_createIndex,
+        /**
+         * Lists indexes on the properties column for edge/vertex tables.
+         *
+         * @returns {Promise<Array<{ tableName: string, indexName: string, indexDefinition: string }>>}
+         */
+        listIndexes: _utils_listIndexes,
         pool: _utils_pool,
+        /**
+         * Removes an index from the properties column for edges/vertices table.
+         *
+         * @param {Object} options
+         * @param {'edges'|'vertices'} options.target - Table target by logical name.
+         * @param {string} options.indexName - Existing index name.
+         * @returns {Promise<{ removed: boolean, indexName: string, tableName: string }>}
+         */
+        removeIndex: _utils_removeIndex,
     },
     vertex: {
         /**
