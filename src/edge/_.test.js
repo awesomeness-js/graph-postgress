@@ -485,4 +485,45 @@ describe('add', async () => {
 
 	});
 
+	it('should return to and from', async () => {
+
+		const v1 = uuid();
+		const v2 = uuid();
+		const type = `awesomeness__test__to_from__${Date.now()}`;
+
+		try {
+
+			const added = await add({
+				v1,
+				type,
+				v2
+			});
+
+			const result = await get(added.id, {
+				returnToFrom: true
+			});
+
+			console.log('result', result);
+
+			expect(result).toHaveProperty('from', v1);
+			expect(result).toHaveProperty('to', v2);
+
+			const searchResult = await search({
+				from: v1,
+				type: type
+			});
+
+			expect(searchResult.length).toBe(1);
+			expect(searchResult[0]).toHaveProperty('from', v1);
+
+		} catch (ex) {
+
+			console.error(ex);
+			expect(ex).toBeNull();
+
+		}
+
+	});
+
+
 });

@@ -12,7 +12,8 @@ import { createPool } from '../utils/pool.js';
 import { settings } from '../config.js';
 
 export default async function getMultiple(edgeIDs, {
-	returnProperties = false
+	returnProperties = false,
+	returnToFrom = false
 } = {}) {
 
 	const graph = createPool();
@@ -52,10 +53,9 @@ export default async function getMultiple(edgeIDs, {
 	const sql = `
     SELECT 
         id,
-        v1,
-        type,
-        v2
-    ${ returnProperties ? ', properties' : '' }
+        type
+        ${returnToFrom ? ', v1 AS "from", v2 AS "to"' : ', v1, v2' }
+        ${ returnProperties ? ', properties' : '' }
     FROM 
         ${settings.tableName_edges} 
     WHERE 

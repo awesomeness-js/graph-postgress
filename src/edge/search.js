@@ -41,6 +41,10 @@ export default async function searchEdges({
 	if(to && !v2s) v2s = to;
 	if(from && !v1s) v1s = from;
 
+	let returnToFrom = false;
+
+	if(to || from) returnToFrom = true;
+
 	const graph = createPool();
     
 	let v1_is_x = false;
@@ -367,10 +371,9 @@ export default async function searchEdges({
 	let query = `
     SELECT 
         id,
-        v1,
-        type,
-        v2
-    ${ returnProperties ? ', properties' : '' }
+        type
+        ${returnToFrom ? ', v1 AS "from", v2 AS "to"' : ', v1, v2' }
+        ${ returnProperties ? ', properties' : '' }
     FROM ${settings.tableName_edges} WHERE `;
 	const conditions = [];
 	const params = [];

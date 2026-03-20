@@ -9,11 +9,13 @@
 import getMultiple from './getMultiple.js';
 
 export default async function getEdge(id, {
-	returnProperties = false
+	returnProperties = false,
+	returnToFrom = false
 } = {}) {
 	
 	let edges = await getMultiple([ id ], {
-		returnProperties
+		returnProperties,
+		returnToFrom
 	});
 
 	return edges[0];
