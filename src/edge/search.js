@@ -238,7 +238,7 @@ export default async function searchEdges({
 
 	}
 
-	const dateFilterOps = [ 'after', 'before', 'between', 'outsideBetween', 'outside', 'gt', 'gte', 'lt', 'lte' ];
+	const dateFilterOps = [ 'after', 'before', 'between', 'outside', 'gt', 'gte', 'lt', 'lte' ];
 
 	const filterContainsDateOps = (value) => {
 
@@ -407,6 +407,9 @@ export default async function searchEdges({
 	if (filterProperties !== null) {
 
 		const containmentFilter = {};
+		const numericValuePattern = '^[-+]?(?:\\d+\\.?\\d*|\\.\\d+)$';
+
+		const isFiniteNumber = (value) => typeof value === 'number' && Number.isFinite(value);
 
 		Object.entries(filterProperties).forEach(([ propertyKey, propertyValue ]) => {
 
@@ -422,11 +425,14 @@ export default async function searchEdges({
 
 				const afterValue = propertyValue.after ?? propertyValue.gt;
 
-				if (typeof afterValue !== 'string' || !afterValue.length) {
+				if (
+					!(typeof afterValue === 'string' && afterValue.length)
+					&& !isFiniteNumber(afterValue)
+				) {
 
 					throw {
 						dbError: {
-							msg: `filterProperties.${propertyKey} invalid - after/gt must be a non-empty date string`,
+							msg: `filterProperties.${propertyKey} invalid - after/gt must be a non-empty date string or a finite number`,
 							filterProperties
 						}
 					};
@@ -439,17 +445,28 @@ export default async function searchEdges({
 				params.push(afterValue);
 				const valueParam = params.length;
 
-				conditions.push(`(properties->>$${keyParam})::timestamptz > $${valueParam}::timestamptz`);
+				if (isFiniteNumber(afterValue)) {
+
+					conditions.push(`CASE WHEN (properties->>$${keyParam}) ~ '${numericValuePattern}' THEN (properties->>$${keyParam})::numeric > $${valueParam}::numeric ELSE false END`);
+
+				} else {
+
+					conditions.push(`(properties->>$${keyParam})::timestamptz > $${valueParam}::timestamptz`);
+
+				}
 
 			}
 
 			if (propertyValue.gte !== undefined) {
 
-				if (typeof propertyValue.gte !== 'string' || !propertyValue.gte.length) {
+				if (
+					!(typeof propertyValue.gte === 'string' && propertyValue.gte.length)
+					&& !isFiniteNumber(propertyValue.gte)
+				) {
 
 					throw {
 						dbError: {
-							msg: `filterProperties.${propertyKey} invalid - gte must be a non-empty date string`,
+							msg: `filterProperties.${propertyKey} invalid - gte must be a non-empty date string or a finite number`,
 							filterProperties
 						}
 					};
@@ -462,7 +479,15 @@ export default async function searchEdges({
 				params.push(propertyValue.gte);
 				const valueParam = params.length;
 
-				conditions.push(`(properties->>$${keyParam})::timestamptz >= $${valueParam}::timestamptz`);
+				if (isFiniteNumber(propertyValue.gte)) {
+
+					conditions.push(`CASE WHEN (properties->>$${keyParam}) ~ '${numericValuePattern}' THEN (properties->>$${keyParam})::numeric >= $${valueParam}::numeric ELSE false END`);
+
+				} else {
+
+					conditions.push(`(properties->>$${keyParam})::timestamptz >= $${valueParam}::timestamptz`);
+
+				}
 
 			}
 
@@ -470,11 +495,14 @@ export default async function searchEdges({
 
 				const beforeValue = propertyValue.before ?? propertyValue.lt;
 
-				if (typeof beforeValue !== 'string' || !beforeValue.length) {
+				if (
+					!(typeof beforeValue === 'string' && beforeValue.length)
+					&& !isFiniteNumber(beforeValue)
+				) {
 
 					throw {
 						dbError: {
-							msg: `filterProperties.${propertyKey} invalid - before/lt must be a non-empty date string`,
+							msg: `filterProperties.${propertyKey} invalid - before/lt must be a non-empty date string or a finite number`,
 							filterProperties
 						}
 					};
@@ -487,17 +515,28 @@ export default async function searchEdges({
 				params.push(beforeValue);
 				const valueParam = params.length;
 
-				conditions.push(`(properties->>$${keyParam})::timestamptz < $${valueParam}::timestamptz`);
+				if (isFiniteNumber(beforeValue)) {
+
+					conditions.push(`CASE WHEN (properties->>$${keyParam}) ~ '${numericValuePattern}' THEN (properties->>$${keyParam})::numeric < $${valueParam}::numeric ELSE false END`);
+
+				} else {
+
+					conditions.push(`(properties->>$${keyParam})::timestamptz < $${valueParam}::timestamptz`);
+
+				}
 
 			}
 
 			if (propertyValue.lte !== undefined) {
 
-				if (typeof propertyValue.lte !== 'string' || !propertyValue.lte.length) {
+				if (
+					!(typeof propertyValue.lte === 'string' && propertyValue.lte.length)
+					&& !isFiniteNumber(propertyValue.lte)
+				) {
 
 					throw {
 						dbError: {
-							msg: `filterProperties.${propertyKey} invalid - lte must be a non-empty date string`,
+							msg: `filterProperties.${propertyKey} invalid - lte must be a non-empty date string or a finite number`,
 							filterProperties
 						}
 					};
@@ -510,24 +549,41 @@ export default async function searchEdges({
 				params.push(propertyValue.lte);
 				const valueParam = params.length;
 
-				conditions.push(`(properties->>$${keyParam})::timestamptz <= $${valueParam}::timestamptz`);
+				if (isFiniteNumber(propertyValue.lte)) {
+
+					conditions.push(`CASE WHEN (properties->>$${keyParam}) ~ '${numericValuePattern}' THEN (properties->>$${keyParam})::numeric <= $${valueParam}::numeric ELSE false END`);
+
+				} else {
+
+					conditions.push(`(properties->>$${keyParam})::timestamptz <= $${valueParam}::timestamptz`);
+
+				}
 
 			}
 
 			if (propertyValue.between !== undefined) {
 
+				const betweenIsNumberRange = Array.isArray(propertyValue.between)
+					&& propertyValue.between.length === 2
+					&& isFiniteNumber(propertyValue.between[0])
+					&& isFiniteNumber(propertyValue.between[1]);
+
+				const betweenIsDateRange = Array.isArray(propertyValue.between)
+					&& propertyValue.between.length === 2
+					&& typeof propertyValue.between[0] === 'string'
+					&& typeof propertyValue.between[1] === 'string'
+					&& propertyValue.between[0].length
+					&& propertyValue.between[1].length;
+
 				if (
 					!Array.isArray(propertyValue.between)
 					|| propertyValue.between.length !== 2
-					|| typeof propertyValue.between[0] !== 'string'
-					|| typeof propertyValue.between[1] !== 'string'
-					|| !propertyValue.between[0].length
-					|| !propertyValue.between[1].length
+					|| (!betweenIsNumberRange && !betweenIsDateRange)
 				) {
 
 					throw {
 						dbError: {
-							msg: `filterProperties.${propertyKey} invalid - between must be [fromDate, toDate]`,
+							msg: `filterProperties.${propertyKey} invalid - between must be [from, to] where both are non-empty date strings or finite numbers`,
 							filterProperties
 						}
 					};
@@ -543,26 +599,42 @@ export default async function searchEdges({
 				params.push(propertyValue.between[1]);
 				const toParam = params.length;
 
-				conditions.push(`(properties->>$${keyParam})::timestamptz >= LEAST($${fromParam}::timestamptz, $${toParam}::timestamptz) AND (properties->>$${keyParam})::timestamptz <= GREATEST($${fromParam}::timestamptz, $${toParam}::timestamptz)`);
+				if (betweenIsNumberRange) {
+
+					conditions.push(`CASE WHEN (properties->>$${keyParam}) ~ '${numericValuePattern}' THEN (properties->>$${keyParam})::numeric >= LEAST($${fromParam}::numeric, $${toParam}::numeric) AND (properties->>$${keyParam})::numeric <= GREATEST($${fromParam}::numeric, $${toParam}::numeric) ELSE false END`);
+
+				} else {
+
+					conditions.push(`(properties->>$${keyParam})::timestamptz >= LEAST($${fromParam}::timestamptz, $${toParam}::timestamptz) AND (properties->>$${keyParam})::timestamptz <= GREATEST($${fromParam}::timestamptz, $${toParam}::timestamptz)`);
+
+				}
 
 			}
 
-			if (propertyValue.outsideBetween !== undefined || propertyValue.outside !== undefined) {
+			if (propertyValue.outside !== undefined) {
 
-				const outsideBetween = propertyValue.outsideBetween ?? propertyValue.outside;
+				const outside = propertyValue.outside;
+				const outsideIsNumberRange = Array.isArray(outside)
+					&& outside.length === 2
+					&& isFiniteNumber(outside[0])
+					&& isFiniteNumber(outside[1]);
+
+				const outsideIsDateRange = Array.isArray(outside)
+					&& outside.length === 2
+					&& typeof outside[0] === 'string'
+					&& typeof outside[1] === 'string'
+					&& outside[0].length
+					&& outside[1].length;
 
 				if (
-					!Array.isArray(outsideBetween)
-					|| outsideBetween.length !== 2
-					|| typeof outsideBetween[0] !== 'string'
-					|| typeof outsideBetween[1] !== 'string'
-					|| !outsideBetween[0].length
-					|| !outsideBetween[1].length
+					!Array.isArray(outside)
+					|| outside.length !== 2
+					|| (!outsideIsNumberRange && !outsideIsDateRange)
 				) {
 
 					throw {
 						dbError: {
-							msg: `filterProperties.${propertyKey} invalid - outsideBetween/outside must be [fromDate, toDate]`,
+							msg: `filterProperties.${propertyKey} invalid - outside must be [from, to] where both are non-empty date strings or finite numbers`,
 							filterProperties
 						}
 					};
@@ -572,13 +644,21 @@ export default async function searchEdges({
 				params.push(propertyKey);
 				const keyParam = params.length;
 
-				params.push(outsideBetween[0]);
+				params.push(outside[0]);
 				const fromParam = params.length;
 
-				params.push(outsideBetween[1]);
+				params.push(outside[1]);
 				const toParam = params.length;
 
-				conditions.push(`((properties->>$${keyParam})::timestamptz < LEAST($${fromParam}::timestamptz, $${toParam}::timestamptz) OR (properties->>$${keyParam})::timestamptz > GREATEST($${fromParam}::timestamptz, $${toParam}::timestamptz))`);
+				if (outsideIsNumberRange) {
+
+					conditions.push(`CASE WHEN (properties->>$${keyParam}) ~ '${numericValuePattern}' THEN ((properties->>$${keyParam})::numeric < LEAST($${fromParam}::numeric, $${toParam}::numeric) OR (properties->>$${keyParam})::numeric > GREATEST($${fromParam}::numeric, $${toParam}::numeric)) ELSE false END`);
+
+				} else {
+
+					conditions.push(`((properties->>$${keyParam})::timestamptz < LEAST($${fromParam}::timestamptz, $${toParam}::timestamptz) OR (properties->>$${keyParam})::timestamptz > GREATEST($${fromParam}::timestamptz, $${toParam}::timestamptz))`);
+
+				}
 
 			}
 
