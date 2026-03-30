@@ -174,7 +174,7 @@ describe('add', async () => {
 
 	});
 
-	it('should support filterProperties date operators for created (after, before, between, lt, gt, lte, gte)', async () => {
+	it('should support filterProperties date operators for created (after, before, between, outsideBetween, lt, gt, lte, gte)', async () => {
 
 		const type = `awesomeness__test__created__${Date.now()}`;
 		const v1 = uuid();
@@ -268,6 +268,28 @@ describe('add', async () => {
 			expect(betweenResults.length).toBe(1);
 			expect(betweenResults[0]?.properties?.created).toBe('2026-01-20T00:00:00Z');
 
+			const outsideBetweenResults = await search({
+				edgeTypes: type,
+				returnProperties: true,
+				sortBy: {
+					property: 'created',
+					direction: 'asc'
+				},
+				filterProperties: {
+					suite: 'created_ops',
+					created: {
+						outsideBetween: [
+							'2026-01-15T00:00:00Z',
+							'2026-01-25T00:00:00Z'
+						]
+					}
+				}
+			});
+
+			expect(outsideBetweenResults.length).toBe(2);
+			expect(outsideBetweenResults[0]?.properties?.created).toBe('2026-01-10T00:00:00Z');
+			expect(outsideBetweenResults[1]?.properties?.created).toBe('2026-01-30T00:00:00Z');
+
 			const gtResults = await search({
 				edgeTypes: type,
 				returnProperties: true,
@@ -333,6 +355,22 @@ describe('add', async () => {
 			expect(lteResults.length).toBe(2);
 			expect(lteResults[0]?.properties?.created).toBe('2026-01-10T00:00:00Z');
 			expect(lteResults[1]?.properties?.created).toBe('2026-01-20T00:00:00Z');
+
+			const betweenUtcRangeNoMatch = await search({
+				edgeTypes: type,
+				returnProperties: true,
+				filterProperties: {
+					suite: 'created_ops',
+					created: {
+						between: [
+							'2026-03-30T04:00:00.000Z',
+							'2026-03-31T03:59:59.999Z'
+						]
+					}
+				}
+			});
+
+			expect(betweenUtcRangeNoMatch.length).toBe(0);
 
 		} catch (ex) {
 

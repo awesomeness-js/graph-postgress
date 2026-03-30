@@ -107,9 +107,10 @@ export default {
          * @async
          * @function
          * @param {Object} [options={}] - The search options.
-         * @param {string|string[]|null} [options.v1s=null] - Vertex 1 UUID(s) to filter by. Can be a single UUID, an array of UUIDs, or null for wildcard.
-         * @param {string|string[]|null} [options.edgeTypes=null] - Edge type(s) to filter by. Can be a single string, an array of strings, or null for wildcard.
-         * @param {string|string[]|null} [options.v2s=null] - Vertex 2 UUID(s) to filter by. Can be a single UUID, an array of UUIDs, or null for wildcard.
+         * @param {string|string[]|null} [options.from=null] - Source vertex UUID(s) to filter by. Can be a single UUID, an array of UUIDs, or null for wildcard.
+         * @param {string|string[]|null} [options.to=null] - Target vertex UUID(s) to filter by. Can be a single UUID, an array of UUIDs, or null for wildcard.
+         * @param {string|string[]|null} [options.type=null] - Edge type(s) to filter by. Can be a single string, an array of strings, or null for wildcard.
+         * @param {string|string[]|null} [options.types=null] - Alias for `type`.
          * @param {number|null} [options.limit=null] - Max number of rows to return.
          * @param {number} [options.startIndex=0] - Number of rows to skip.
          * @param {string|Object|null} [options.sortBy=null] - Sort configuration. Supports string formats (`id`, `-id`, `id:desc`) or object formats (`{ field, direction }`, `{ property, direction }`).

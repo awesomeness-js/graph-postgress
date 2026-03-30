@@ -238,7 +238,7 @@ export default async function searchEdges({
 
 	}
 
-	const dateFilterOps = [ 'after', 'before', 'between', 'gt', 'gte', 'lt', 'lte' ];
+	const dateFilterOps = [ 'after', 'before', 'between', 'outsideBetween', 'outside', 'gt', 'gte', 'lt', 'lte' ];
 
 	const filterContainsDateOps = (value) => {
 
@@ -543,7 +543,42 @@ export default async function searchEdges({
 				params.push(propertyValue.between[1]);
 				const toParam = params.length;
 
-				conditions.push(`(properties->>$${keyParam})::timestamptz BETWEEN $${fromParam}::timestamptz AND $${toParam}::timestamptz`);
+				conditions.push(`(properties->>$${keyParam})::timestamptz >= LEAST($${fromParam}::timestamptz, $${toParam}::timestamptz) AND (properties->>$${keyParam})::timestamptz <= GREATEST($${fromParam}::timestamptz, $${toParam}::timestamptz)`);
+
+			}
+
+			if (propertyValue.outsideBetween !== undefined || propertyValue.outside !== undefined) {
+
+				const outsideBetween = propertyValue.outsideBetween ?? propertyValue.outside;
+
+				if (
+					!Array.isArray(outsideBetween)
+					|| outsideBetween.length !== 2
+					|| typeof outsideBetween[0] !== 'string'
+					|| typeof outsideBetween[1] !== 'string'
+					|| !outsideBetween[0].length
+					|| !outsideBetween[1].length
+				) {
+
+					throw {
+						dbError: {
+							msg: `filterProperties.${propertyKey} invalid - outsideBetween/outside must be [fromDate, toDate]`,
+							filterProperties
+						}
+					};
+
+				}
+
+				params.push(propertyKey);
+				const keyParam = params.length;
+
+				params.push(outsideBetween[0]);
+				const fromParam = params.length;
+
+				params.push(outsideBetween[1]);
+				const toParam = params.length;
+
+				conditions.push(`((properties->>$${keyParam})::timestamptz < LEAST($${fromParam}::timestamptz, $${toParam}::timestamptz) OR (properties->>$${keyParam})::timestamptz > GREATEST($${fromParam}::timestamptz, $${toParam}::timestamptz))`);
 
 			}
 
