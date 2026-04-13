@@ -30,7 +30,7 @@ export default async function addEdges(data, {
 	// Data validation function to reduce redundancy
 	each(data, (entry, i) => {
 
-		const { 
+		let { 
 			v1, 
 			type, 
 			v2, 
