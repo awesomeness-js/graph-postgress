@@ -4,8 +4,10 @@
  *
  * @param {Array<Object>} data - Array of edge objects to add. Each object should have:
  *   @param {string} data[].v1 - UUID of the source vertex.
+ *   @param {string} data[].from - UUID of the from vertex. (array or id)
  *   @param {string} data[].type - Type of the edge (string, max length 420).
  *   @param {string} data[].v2 - UUID of the target vertex.
+ *   @param {string} [data[].to] - UUID of the to vertex. (array or id)
  *   @param {string} [data[].id] - Optional UUID for the edge. If not provided, a new UUID is generated.
  *   @param {Object|null} [data[].properties] - Optional properties object for the edge.
  * @param {Object} [options] - Optional configuration object.
@@ -38,8 +40,15 @@ export default async function addEdges(data, {
 			properties 
 		} = entry;
 
-		if(to && !v2) entry.v2 = to;
-		if(from && !v1) entry.v1 = from;
+		if(to && !v2) {
+			entry.v2 = to;
+			v2 = to;
+		}
+
+		if(from && !v1) {
+			entry.v1 = from;
+			v1 = from;
+		}
 
 		if (!isUUID(v1) || !isUUID(v2)) {
 

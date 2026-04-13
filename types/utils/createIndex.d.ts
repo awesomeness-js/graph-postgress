@@ -8,8 +8,8 @@
  * @returns {Promise<{ created: boolean, indexName: string, tableName: string }>}
  */
 export default function createIndex({ target, indexName, propertyKey }?: {
-    target?: "edges" | "vertices";
-    indexName?: string | null;
+    target?: "edges" | "vertices" | undefined;
+    indexName?: string | null | undefined;
     propertyKey: string;
 }): Promise<{
     created: boolean;

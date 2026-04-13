@@ -1,4 +1,4 @@
 export default function getMultiple(edgeIDs: any, { returnProperties, returnToFrom }?: {
-    returnProperties?: boolean;
-    returnToFrom?: boolean;
+    returnProperties?: boolean | undefined;
+    returnToFrom?: boolean | undefined;
 }): Promise<any>;

@@ -1,4 +1,4 @@
 export default function searchVertexTypes(types: any, { keyById, groupByType }?: {
-    keyById?: boolean;
-    groupByType?: boolean;
+    keyById?: boolean | undefined;
+    groupByType?: boolean | undefined;
 }): Promise<any>;

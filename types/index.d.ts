@@ -32,266 +32,306 @@ import type _vertex_search from './vertex/search';
 
 export declare const config: typeof _config;
 
+export declare const edge: {
+	add: typeof _edge_add;
+	addMultiple: typeof _edge_addMultiple;
+	delete: typeof _edge_delete;
+	deleteMultiple: typeof _edge_deleteMultiple;
+	get: typeof _edge_get;
+	getMultiple: typeof _edge_getMultiple;
+	search: typeof _edge_search;
+};
+
+export declare const kv: {
+	add: typeof _kv_add;
+	addMultiple: typeof _kv_addMultiple;
+	delete: typeof _kv_delete;
+	deleteMultiple: typeof _kv_deleteMultiple;
+	get: typeof _kv_get;
+	getMultiple: typeof _kv_getMultiple;
+};
+
+export declare const utils: {
+	createDB: typeof _utils_createDB;
+	createIndex: typeof _utils_createIndex;
+	listIndexes: typeof _utils_listIndexes;
+	pool: typeof _utils_pool;
+	removeIndex: typeof _utils_removeIndex;
+};
+
+export declare const vertex: {
+	add: typeof _vertex_add;
+	addMultiple: typeof _vertex_addMultiple;
+	delete: typeof _vertex_delete;
+	deleteMultiple: typeof _vertex_deleteMultiple;
+	get: typeof _vertex_get;
+	getMultiple: typeof _vertex_getMultiple;
+	search: typeof _vertex_search;
+};
+
+
 declare const _default: {
-    config: typeof _config;
-    edge: {
-        /**
-         * Adds a single edge to the graph.
-         *
-         * @async
-         * @param {Object} params - The parameters for the edge.
-         * @param {string} params.v1 - The ID of the source vertex.
-         * @param {string} params.type - The type of the edge.
-         * @param {string} params.v2 - The ID of the target vertex.
-         * @param {string} [params.id=uuid()] - The unique identifier for the edge. Defaults to a generated UUID.
-         * @param {Object|null} [params.properties=null] - Optional properties to associate with the edge.
-         * @returns {Promise<Object>} The newly added edge object.
-         */
-        add: typeof _edge_add,
-        /**
-         * Adds multiple edges to the graph database in chunks, with validation and upsert logic.
-         *
-         * @param {Array<Object>} data - Array of edge objects to add. Each object should have:
-         *   @param {string} data[].v1 - UUID of the source vertex.
-         *   @param {string} data[].type - Type of the edge (string, max length 420).
-         *   @param {string} data[].v2 - UUID of the target vertex.
-         *   @param {string} [data[].id] - Optional UUID for the edge. If not provided, a new UUID is generated.
-         *   @param {Object|null} [data[].properties] - Optional properties object for the edge.
-         * @param {Object} [options] - Optional configuration object.
-         * @param {number} [options.chunkSize=5000] - Number of edges to insert per batch.
-         * @param {boolean} [options.unique=false] - If true, enforces uniqueness by (v1, type, v2) and reuses existing IDs.
-         * @returns {Promise<Array<Object>>} The array of edge objects (with generated IDs if not provided).
-         * @throws {Object} Throws an error object with `dbError` or `multipleEdgeCreationFailed` on validation or query failure.
-         */
-        addMultiple: typeof _edge_addMultiple,
-        /**
-         * Deletes a single edge by its ID.
-         *
-         * @param {uuid} edgeID - The unique identifier of the edge to delete.
-         * @returns {Promise<*>} A promise that resolves with the result of the deletion operation.
-         */
-        delete: typeof _edge_delete,
-        /**
-         * Deletes multiple edges from the database by their UUIDs.
-         *
-         * @param {string[]} edgeIDs - An array of edge UUIDs to delete.
-         * @returns {Promise<boolean>} Resolves to true if deletion is successful.
-         * @throws {Object} Throws an error object if:
-         *   - `edgeIDs` is not an array of UUIDs.
-         *   - Any element in `edgeIDs` is not a valid UUID.
-         *   - The database operation fails.
-         */
-        deleteMultiple: typeof _edge_deleteMultiple,
-        /**
-         * Retrieves a single edge by its ID.
-         *
-         * @param {string|number} id - The unique identifier of the edge to retrieve.
-         * @param {Object} [options={}] - Optional parameters.
-         * @param {boolean} [options.returnProperties=false] - Whether to include edge properties in the result.
-         * @returns {Promise<Object|undefined>} A promise that resolves to the edge object if found, or undefined if not found.
-         */
-        get: typeof _edge_get,
-        /**
-         * Retrieves multiple edges from the database by their UUIDs.
-         *
-         * @param {string[]} edgeIDs - An array of edge UUIDs to retrieve.
-         * @param {Object} [options] - Optional parameters.
-         * @param {boolean} [options.returnProperties=false] - Whether to include the 'properties' field in the result.
-         * @returns {Promise<Object[]>} A promise that resolves to an array of edge objects.
-         * @throws {Object} Throws an error object if validation fails or if the database query fails.
-         */
-        getMultiple: typeof _edge_getMultiple,
-        /**
-         * Searches for edges in the graph database based on provided criteria.
-         *
-         * @async
-         * @function
-         * @param {Object} [options={}] - The search options.
-         * @param {string|string[]|null} [options.from=null] - Source vertex UUID(s) to filter by. Can be a single UUID, an array of UUIDs, or null for wildcard.
-         * @param {string|string[]|null} [options.to=null] - Target vertex UUID(s) to filter by. Can be a single UUID, an array of UUIDs, or null for wildcard.
-         * @param {string|string[]|null} [options.type=null] - Edge type(s) to filter by. Can be a single string, an array of strings, or null for wildcard.
-         * @param {string|string[]|null} [options.types=null] - Alias for `type`.
-         * @param {number|null} [options.limit=null] - Max number of rows to return.
-         * @param {number} [options.startIndex=0] - Number of rows to skip.
-         * @param {string|Object|null} [options.sortBy=null] - Sort configuration. Supports string formats (`id`, `-id`, `id:desc`) or object formats (`{ field, direction }`, `{ property, direction }`).
-         * @param {Object|null} [options.filterProperties=null] - JSONB containment filter applied to the `properties` column.
-         * @param {boolean} [options.returnProperties=false] - Whether to include edge properties in the result.
-         * @returns {Promise<Object[]>} Resolves to an array of edge objects matching the search criteria.
-         * @throws {Object} Throws an error object with a `dbError` property if input validation fails, or with a `searchEdgesFailed` property if the database query fails.
-         */
-        search: typeof _edge_search,
-    },
-    kv: {
-        /**
-        * Adds a key-value pair to the storage.
-        *
-        * @param {string} key - The key to add.
-        * @param {string} value - The value to associate with the key.
-        * @returns {Promise<void>} A promise that resolves when the key-value pair has been added.
-        */
-        add: typeof _kv_add,
-        /**
-         * Adds multiple key-value pairs to the database.
-         * 
-         * @example graph.kv.addMultiple({
-         *    key1: { some: 'data' },
-         *    key2: 'some string'
-         * });
-         *
-         * @param {Object} dictionary - An object containing key-value pairs to be added.
-         * @param {Object} options - Options for the batch insertion.
-         * @param {number} [options.batchSize=settings.defaultBatchSize] - The number of key-value pairs to insert in each batch.
-         * @returns {Promise<Object>} - The original dictionary object.
-         * @throws {Object} - Throws an error if a key is invalid or if the database insertion fails.
-         */
-        addMultiple: typeof _kv_addMultiple,
-        /**
-         * Deletes a key-value pair from the store.
-         *
-         * @param {string} key - The key to delete from the store.
-         * @returns {Promise<*>} A promise that resolves with the result of the deletion operation.
-         */
-        delete: typeof _kv_delete,
-        /**
-         * Deletes multiple key-value entries from the database in batches.
-         *
-         * @async
-         * @param {string[]} keys - An array of keys (UUIDs or strings) to delete.
-         * @param {Object} [options] - Optional settings.
-         * @param {number} [options.batchSize=settings.defaultBatchSize] - Number of keys to delete per batch.
-         * @throws {Object} Throws an error if `keys` is not an array or contains invalid keys.
-         * @throws {Object} Throws an error if the database operation fails.
-         * @returns {Promise<boolean>} Returns true if all keys are deleted successfully.
-         */
-        deleteMultiple: typeof _kv_deleteMultiple,
-        /**
-         * Searches for a value in the key-value store by the provided key.
-         *
-         * @async
-         * @function searchKV
-         * @param {string} key - The key to search for in the key-value store.
-         * @returns {Promise<*>} The value associated with the given key, or undefined if not found.
-         */
-        get: typeof _kv_get,
-        /**
-         * Searches for multiple key-value pairs in the database by their keys.
-         *
-         * @async
-         * @function searchKVs
-         * @param {string[]} keys - An array of string keys to search for. Each key must be a string with a maximum length of 420 characters.
-         * @returns {Promise<Object>} A promise that resolves to an object mapping each found key to its corresponding value.
-         * @throws {Object} Throws an error object if the input is invalid or if the database query fails.
-         *   - If `keys` is not an array, throws an error with a `dbError` property.
-         *   - If any key is not a string or exceeds 420 characters, throws an error with a `dbError` property.
-         *   - If the database query fails, throws an error with a `searchKVsFailed` property containing the stack trace.
-         */
-        getMultiple: typeof _kv_getMultiple,
-    },
-    utils: {
-        createDB: typeof _utils_createDB,
-        /**
-         * Creates an expression index on a properties key path for edges/vertices table.
-         *
-         * @param {Object} [options]
-         * @param {'edges'|'vertices'} [options.target='edges'] - Table target by logical name.
-         * @param {string|null} [options.indexName=null] - Optional index name.
-         * @param {string} options.propertyKey - Required properties key path (supports dot notation, e.g. "createdBy" or "something.deeper").
-         * @returns {Promise<{ created: boolean, indexName: string, tableName: string }>}
-         */
-        createIndex: typeof _utils_createIndex,
-        /**
-         * Lists indexes on the properties column for edge/vertex tables.
-         *
-         * @returns {Promise<Array<{ tableName: string, indexName: string, indexDefinition: string }>>}
-         */
-        listIndexes: typeof _utils_listIndexes,
-        pool: typeof _utils_pool,
-        /**
-         * Removes an index from the properties column for edges/vertices table.
-         *
-         * @param {Object} options
-         * @param {'edges'|'vertices'} options.target - Table target by logical name.
-         * @param {string} options.indexName - Existing index name.
-         * @returns {Promise<{ removed: boolean, indexName: string, tableName: string }>}
-         */
-        removeIndex: typeof _utils_removeIndex,
-    },
-    vertex: {
-        /**
-         * Adds a single vertex to the graph.
-         *
-         * @param {Object} vertex - The vertex object to be added.
-         * @param {string} vertex.type - The type of the vertex.
-         * @param {string} vertex.id - The ID of the vertex. If not provided, a UUID will be generated.
-         * @param {Object} vertex.example - any other properties of the vertex.
-         * @returns {Promise<Object>} A promise that resolves to the added vertex.
-         */
-        add: typeof _vertex_add,
-        /**
-         * Adds multiple vertices to the database.
-         * 
-         * @example graph.vertices.addMultiple([
-         *    { id: 'this uuid will be used', type: 'Person', name: 'Alice' },
-         *    { type: 'City', name: 'Wonderland' } // id will be generated
-         * ]);
-         *
-         * @param {Array<Object>} vertices - An array of vertex objects to be added.
-         * @param {Object} options - Options for the batch insertion.
-         * @param {number} [options.batchSize=settings.defaultBatchSize] - The number of vertices to insert in each batch.
-         * @returns {Promise<Array>} - An array of inserted vertices with all properties.
-         * @throws {Object} - Throws an error if a vertex type is invalid or if the database insertion fails.
-         */
-        addMultiple: typeof _vertex_addMultiple,
-        /**
-         * Deletes a single vertex by its ID.
-         *
-         * @param {string|number} vertexID - The unique identifier of the vertex to delete.
-         * @returns {Promise<any>} A promise that resolves when the vertex has been deleted.
-         */
-        delete: typeof _vertex_delete,
-        /**
-         * Deletes multiple vertices from the database by their UUIDs in batches.
-         *
-         * @async
-         * @function
-         * @param {string[]} ids - An array of UUID strings representing the vertex IDs to delete.
-         * @param {Object} [options] - Optional configuration object.
-         * @param {number} [options.batchSize=settings.defaultBatchSize] - The number of IDs to delete per batch.
-         * @throws {Object} Throws an error if `ids` is not an array, if any ID is not a valid UUID, or if the database operation fails.
-         * @returns {Promise<boolean>} Returns `true` if all vertices are deleted successfully.
-         */
-        deleteMultiple: typeof _vertex_deleteMultiple,
-        /**
-         * Retrieves a single vertex by its ID.
-         *
-         * @async
-         * @function
-         * @param {string|number} id - The unique identifier of the vertex to fetch.
-         * @returns {Promise<Object|undefined>} A promise that resolves to the fetched vertex object, or undefined if not found.
-         */
-        get: typeof _vertex_get,
-        /**
-         * Searches for multiple vertices in the database by their UUIDs.
-         *
-         * @param {string[]} ids - An array of UUID strings representing the vertex IDs to search for.
-         * @param {Object} [options] - Optional configuration object.
-         * @param {boolean} [options.keyById=settings.keyById] - If true, returns an object keyed by vertex ID; otherwise, returns an array of properties.
-         * @returns {Promise<Object<string, any>|any[]>} - A promise that resolves to either an object keyed by vertex ID or an array of vertex properties.
-         * @throws {Object} Throws an error if `ids` is not an array, if any ID is not a valid UUID, or if the database query fails.
-         */
-        getMultiple: typeof _vertex_getMultiple,
-        /**
-         * Searches for vertex types in the database and returns their properties.
-         *
-         * @param {string|string[]} types - The vertex type(s) to search for. Can be a single string or an array of strings.
-         * @param {Object} [options] - Optional configuration object.
-         * @param {boolean} [options.keyById=settings.keyById] - If true, results are keyed by vertex ID.
-         * @param {boolean} [options.groupByType=true] - If true, results are grouped by type.
-         * @returns {Promise<Object|Array>} - Returns a Promise that resolves to an object or array containing the vertex properties, grouped and/or keyed according to the options.
-         * @throws {Object} Throws an error object if input validation fails or if the database query fails.
-         */
-        search: typeof _vertex_search,
-    },
+	config: typeof _config;
+	edge: {
+		/**
+		 * Adds a single edge to the graph.
+		 *
+		 * @async
+		 * @param {Object} params - The parameters for the edge.
+		 * @param {string} params.v1 - The ID of the source vertex.
+		 * @param {string} params.type - The type of the edge.
+		 * @param {string} params.v2 - The ID of the target vertex.
+		 * @param {string} [params.id=uuid()] - The unique identifier for the edge. Defaults to a generated UUID.
+		 * @param {Object|null} [params.properties=null] - Optional properties to associate with the edge.
+		 * @returns {Promise<Object>} The newly added edge object.
+		 */
+		add: typeof _edge_add,
+		/**
+		 * Adds multiple edges to the graph database in chunks, with validation and upsert logic.
+		 *
+		 * @param {Array<Object>} data - Array of edge objects to add. Each object should have:
+		 *   @param {string} data[].v1 - UUID of the source vertex.
+		 *   @param {string} data[].from - UUID of the from vertex. (array or id)
+		 *   @param {string} data[].type - Type of the edge (string, max length 420).
+		 *   @param {string} data[].v2 - UUID of the target vertex.
+		 *   @param {string} [data[].to] - UUID of the to vertex. (array or id)
+		 *   @param {string} [data[].id] - Optional UUID for the edge. If not provided, a new UUID is generated.
+		 *   @param {Object|null} [data[].properties] - Optional properties object for the edge.
+		 * @param {Object} [options] - Optional configuration object.
+		 * @param {number} [options.chunkSize=5000] - Number of edges to insert per batch.
+		 * @param {boolean} [options.unique=false] - If true, enforces uniqueness by (v1, type, v2) and reuses existing IDs.
+		 * @returns {Promise<Array<Object>>} The array of edge objects (with generated IDs if not provided).
+		 * @throws {Object} Throws an error object with `dbError` or `multipleEdgeCreationFailed` on validation or query failure.
+		 */
+		addMultiple: typeof _edge_addMultiple,
+		/**
+		 * Deletes a single edge by its ID.
+		 *
+		 * @param {uuid} edgeID - The unique identifier of the edge to delete.
+		 * @returns {Promise<*>} A promise that resolves with the result of the deletion operation.
+		 */
+		delete: typeof _edge_delete,
+		/**
+		 * Deletes multiple edges from the database by their UUIDs.
+		 *
+		 * @param {string[]} edgeIDs - An array of edge UUIDs to delete.
+		 * @returns {Promise<boolean>} Resolves to true if deletion is successful.
+		 * @throws {Object} Throws an error object if:
+		 *   - `edgeIDs` is not an array of UUIDs.
+		 *   - Any element in `edgeIDs` is not a valid UUID.
+		 *   - The database operation fails.
+		 */
+		deleteMultiple: typeof _edge_deleteMultiple,
+		/**
+		 * Retrieves a single edge by its ID.
+		 *
+		 * @param {string|number} id - The unique identifier of the edge to retrieve.
+		 * @param {Object} [options={}] - Optional parameters.
+		 * @param {boolean} [options.returnProperties=false] - Whether to include edge properties in the result.
+		 * @returns {Promise<Object|undefined>} A promise that resolves to the edge object if found, or undefined if not found.
+		 */
+		get: typeof _edge_get,
+		/**
+		 * Retrieves multiple edges from the database by their UUIDs.
+		 *
+		 * @param {string[]} edgeIDs - An array of edge UUIDs to retrieve.
+		 * @param {Object} [options] - Optional parameters.
+		 * @param {boolean} [options.returnProperties=false] - Whether to include the 'properties' field in the result.
+		 * @returns {Promise<Object[]>} A promise that resolves to an array of edge objects.
+		 * @throws {Object} Throws an error object if validation fails or if the database query fails.
+		 */
+		getMultiple: typeof _edge_getMultiple,
+		/**
+		 * Searches for edges in the graph database based on provided criteria.
+		 *
+		 * @async
+		 * @function
+		 * @param {Object} [options={}] - The search options.
+		 * @param {string|string[]|null} [options.from=null] - Source vertex UUID(s) to filter by. Can be a single UUID, an array of UUIDs, or null for wildcard.
+		 * @param {string|string[]|null} [options.to=null] - Target vertex UUID(s) to filter by. Can be a single UUID, an array of UUIDs, or null for wildcard.
+		 * @param {string|string[]|null} [options.type=null] - Edge type(s) to filter by. Can be a single string, an array of strings, or null for wildcard.
+		 * @param {string|string[]|null} [options.types=null] - Alias for `type`.
+		 * @param {number|null} [options.limit=null] - Max number of rows to return.
+		 * @param {number} [options.startIndex=0] - Number of rows to skip.
+		 * @param {string|Object|null} [options.sortBy=null] - Sort configuration. Supports string formats (`id`, `-id`, `id:desc`) or object formats (`{ field, direction }`, `{ property, direction }`).
+		 * @param {Object|null} [options.filterProperties=null] - JSONB containment filter applied to the `properties` column.
+		 * @param {boolean} [options.returnProperties=false] - Whether to include edge properties in the result.
+		 * @returns {Promise<Object[]>} Resolves to an array of edge objects matching the search criteria.
+		 * @throws {Object} Throws an error object with a `dbError` property if input validation fails, or with a `searchEdgesFailed` property if the database query fails.
+		 */
+		search: typeof _edge_search,
+	},
+	kv: {
+		/**
+		* Adds a key-value pair to the storage.
+		*
+		* @param {string} key - The key to add.
+		* @param {string} value - The value to associate with the key.
+		* @returns {Promise<void>} A promise that resolves when the key-value pair has been added.
+		*/
+		add: typeof _kv_add,
+		/**
+		 * Adds multiple key-value pairs to the database.
+		 * 
+		 * @example graph.kv.addMultiple({
+		 *    key1: { some: 'data' },
+		 *    key2: 'some string'
+		 * });
+		 *
+		 * @param {Object} dictionary - An object containing key-value pairs to be added.
+		 * @param {Object} options - Options for the batch insertion.
+		 * @param {number} [options.batchSize=settings.defaultBatchSize] - The number of key-value pairs to insert in each batch.
+		 * @returns {Promise<Object>} - The original dictionary object.
+		 * @throws {Object} - Throws an error if a key is invalid or if the database insertion fails.
+		 */
+		addMultiple: typeof _kv_addMultiple,
+		/**
+		 * Deletes a key-value pair from the store.
+		 *
+		 * @param {string} key - The key to delete from the store.
+		 * @returns {Promise<*>} A promise that resolves with the result of the deletion operation.
+		 */
+		delete: typeof _kv_delete,
+		/**
+		 * Deletes multiple key-value entries from the database in batches.
+		 *
+		 * @async
+		 * @param {string[]} keys - An array of keys (UUIDs or strings) to delete.
+		 * @param {Object} [options] - Optional settings.
+		 * @param {number} [options.batchSize=settings.defaultBatchSize] - Number of keys to delete per batch.
+		 * @throws {Object} Throws an error if `keys` is not an array or contains invalid keys.
+		 * @throws {Object} Throws an error if the database operation fails.
+		 * @returns {Promise<boolean>} Returns true if all keys are deleted successfully.
+		 */
+		deleteMultiple: typeof _kv_deleteMultiple,
+		/**
+		 * Searches for a value in the key-value store by the provided key.
+		 *
+		 * @async
+		 * @function searchKV
+		 * @param {string} key - The key to search for in the key-value store.
+		 * @returns {Promise<*>} The value associated with the given key, or undefined if not found.
+		 */
+		get: typeof _kv_get,
+		/**
+		 * Searches for multiple key-value pairs in the database by their keys.
+		 *
+		 * @async
+		 * @function searchKVs
+		 * @param {string[]} keys - An array of string keys to search for. Each key must be a string with a maximum length of 420 characters.
+		 * @returns {Promise<Object>} A promise that resolves to an object mapping each found key to its corresponding value.
+		 * @throws {Object} Throws an error object if the input is invalid or if the database query fails.
+		 *   - If `keys` is not an array, throws an error with a `dbError` property.
+		 *   - If any key is not a string or exceeds 420 characters, throws an error with a `dbError` property.
+		 *   - If the database query fails, throws an error with a `searchKVsFailed` property containing the stack trace.
+		 */
+		getMultiple: typeof _kv_getMultiple,
+	},
+	utils: {
+		createDB: typeof _utils_createDB,
+		/**
+		 * Creates an expression index on a properties key path for edges/vertices table.
+		 *
+		 * @param {Object} [options]
+		 * @param {'edges'|'vertices'} [options.target='edges'] - Table target by logical name.
+		 * @param {string|null} [options.indexName=null] - Optional index name.
+		 * @param {string} options.propertyKey - Required properties key path (supports dot notation, e.g. "createdBy" or "something.deeper").
+		 * @returns {Promise<{ created: boolean, indexName: string, tableName: string }>}
+		 */
+		createIndex: typeof _utils_createIndex,
+		/**
+		 * Lists indexes on the properties column for edge/vertex tables.
+		 *
+		 * @returns {Promise<Array<{ tableName: string, indexName: string, indexDefinition: string }>>}
+		 */
+		listIndexes: typeof _utils_listIndexes,
+		pool: typeof _utils_pool,
+		/**
+		 * Removes an index from the properties column for edges/vertices table.
+		 *
+		 * @param {Object} options
+		 * @param {'edges'|'vertices'} options.target - Table target by logical name.
+		 * @param {string} options.indexName - Existing index name.
+		 * @returns {Promise<{ removed: boolean, indexName: string, tableName: string }>}
+		 */
+		removeIndex: typeof _utils_removeIndex,
+	},
+	vertex: {
+		/**
+		 * Adds a single vertex to the graph.
+		 *
+		 * @param {Object} vertex - The vertex object to be added.
+		 * @param {string} vertex.type - The type of the vertex.
+		 * @param {string} vertex.id - The ID of the vertex. If not provided, a UUID will be generated.
+		 * @param {Object} vertex.example - any other properties of the vertex.
+		 * @returns {Promise<Object>} A promise that resolves to the added vertex.
+		 */
+		add: typeof _vertex_add,
+		/**
+		 * Adds multiple vertices to the database.
+		 * 
+		 * @example graph.vertices.addMultiple([
+		 *    { id: 'this uuid will be used', type: 'Person', name: 'Alice' },
+		 *    { type: 'City', name: 'Wonderland' } // id will be generated
+		 * ]);
+		 *
+		 * @param {Array<Object>} vertices - An array of vertex objects to be added.
+		 * @param {Object} options - Options for the batch insertion.
+		 * @param {number} [options.batchSize=settings.defaultBatchSize] - The number of vertices to insert in each batch.
+		 * @returns {Promise<Array>} - An array of inserted vertices with all properties.
+		 * @throws {Object} - Throws an error if a vertex type is invalid or if the database insertion fails.
+		 */
+		addMultiple: typeof _vertex_addMultiple,
+		/**
+		 * Deletes a single vertex by its ID.
+		 *
+		 * @param {string|number} vertexID - The unique identifier of the vertex to delete.
+		 * @returns {Promise<any>} A promise that resolves when the vertex has been deleted.
+		 */
+		delete: typeof _vertex_delete,
+		/**
+		 * Deletes multiple vertices from the database by their UUIDs in batches.
+		 *
+		 * @async
+		 * @function
+		 * @param {string[]} ids - An array of UUID strings representing the vertex IDs to delete.
+		 * @param {Object} [options] - Optional configuration object.
+		 * @param {number} [options.batchSize=settings.defaultBatchSize] - The number of IDs to delete per batch.
+		 * @throws {Object} Throws an error if `ids` is not an array, if any ID is not a valid UUID, or if the database operation fails.
+		 * @returns {Promise<boolean>} Returns `true` if all vertices are deleted successfully.
+		 */
+		deleteMultiple: typeof _vertex_deleteMultiple,
+		/**
+		 * Retrieves a single vertex by its ID.
+		 *
+		 * @async
+		 * @function
+		 * @param {string|number} id - The unique identifier of the vertex to fetch.
+		 * @returns {Promise<Object|undefined>} A promise that resolves to the fetched vertex object, or undefined if not found.
+		 */
+		get: typeof _vertex_get,
+		/**
+		 * Searches for multiple vertices in the database by their UUIDs.
+		 *
+		 * @param {string[]} ids - An array of UUID strings representing the vertex IDs to search for.
+		 * @param {Object} [options] - Optional configuration object.
+		 * @param {boolean} [options.keyById=settings.keyById] - If true, returns an object keyed by vertex ID; otherwise, returns an array of properties.
+		 * @returns {Promise<Object<string, any>|any[]>} - A promise that resolves to either an object keyed by vertex ID or an array of vertex properties.
+		 * @throws {Object} Throws an error if `ids` is not an array, if any ID is not a valid UUID, or if the database query fails.
+		 */
+		getMultiple: typeof _vertex_getMultiple,
+		/**
+		 * Searches for vertex types in the database and returns their properties.
+		 *
+		 * @param {string|string[]} types - The vertex type(s) to search for. Can be a single string or an array of strings.
+		 * @param {Object} [options] - Optional configuration object.
+		 * @param {boolean} [options.keyById=settings.keyById] - If true, results are keyed by vertex ID.
+		 * @param {boolean} [options.groupByType=true] - If true, results are grouped by type.
+		 * @returns {Promise<Object|Array>} - Returns a Promise that resolves to an object or array containing the vertex properties, grouped and/or keyed according to the options.
+		 * @throws {Object} Throws an error object if input validation fails or if the database query fails.
+		 */
+		search: typeof _vertex_search,
+	},
 };
 
 export default _default;
