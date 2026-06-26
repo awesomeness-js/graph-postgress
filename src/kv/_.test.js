@@ -3,6 +3,9 @@ import { describe, it, expect } from 'vitest';
 import add from './add.js';
 import addMultiple from './addMultiple.js';
 
+import set from './set.js';
+import mGet from './mGet.js';
+
 import deleteOne from './delete.js';
 import deleteMultiple from './deleteMultiple.js';
 
@@ -96,5 +99,39 @@ describe('add', async () => {
 		expect(del).toEqual(true);
 
 	});
+
+
+	// set
+	it('should set the correct value for a key', async () => {
+		
+		const result = await set('awesomeness__testSet', { some: 'data' });
+
+		expect(result).toEqual({ some: 'data' });
+
+	});
+
+	// mget
+	it('should get the correct values for multiple keys', async () => {
+
+		let kvs = {
+			awesomeness__testSet: { some: 'data' },
+			awesomeness__testSet2: { some: 'data2' },
+			awesomeness__testSet3: { some: 'data3' },
+		};
+
+		await addMultiple(kvs);
+
+		let keys = Object.keys(kvs);
+
+		let kvsBack = await mGet(keys);
+
+		expect(kvsBack).toEqual(kvs);
+
+		let del = await deleteMultiple(keys);
+
+		expect(del).toEqual(true);
+
+	});
+
 
 });
