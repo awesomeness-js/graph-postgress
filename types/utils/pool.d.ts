@@ -5,5 +5,5 @@ declare namespace _default {
 }
 export default _default;
 export function createPool(): any;
-export function closePool(): Promise<void>;
+export function closePool(targetPool?: any): Promise<void>;
 export function resetPool(): void;

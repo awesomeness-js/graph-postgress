@@ -17,6 +17,9 @@ import _kv_delete from './src/kv/delete.js';
 import _kv_deleteMultiple from './src/kv/deleteMultiple.js';
 import _kv_get from './src/kv/get.js';
 import _kv_getMultiple from './src/kv/getMultiple.js';
+import _kv_mGet from './src/kv/mGet.js';
+import _kv_set from './src/kv/set.js';
+import _kv_setMultiple from './src/kv/setMultiple.js';
 import _utils_createDB from './src/utils/createDB.js';
 import _utils_createIndex from './src/utils/createIndex.js';
 import _utils_listIndexes from './src/utils/listIndexes.js';
@@ -29,6 +32,8 @@ import _vertex_deleteMultiple from './src/vertex/deleteMultiple.js';
 import _vertex_get from './src/vertex/get.js';
 import _vertex_getMultiple from './src/vertex/getMultiple.js';
 import _vertex_search from './src/vertex/search.js';
+import _vertex_update from './src/vertex/update.js';
+import _vertex_updateMultiple from './src/vertex/updateMultiple.js';
 
 export { _config as config };
 
@@ -48,7 +53,10 @@ export const kv = {
 	delete: _kv_delete,
 	deleteMultiple: _kv_deleteMultiple,
 	get: _kv_get,
-	getMultiple: _kv_getMultiple
+	getMultiple: _kv_getMultiple,
+	mGet: _kv_mGet,
+	set: _kv_set,
+	setMultiple: _kv_setMultiple
 };
 
 export const utils = {
@@ -66,7 +74,9 @@ export const vertex = {
 	deleteMultiple: _vertex_deleteMultiple,
 	get: _vertex_get,
 	getMultiple: _vertex_getMultiple,
-	search: _vertex_search
+	search: _vertex_search,
+	update: _vertex_update,
+	updateMultiple: _vertex_updateMultiple
 };
 
 
@@ -226,6 +236,43 @@ export default {
 		 *   - If the database query fails, throws an error with a `searchKVsFailed` property containing the stack trace.
 		 */
 		getMultiple: _kv_getMultiple,
+		/**
+		 * Searches for multiple key-value pairs in the database by their keys.
+		 *
+		 * @async
+		 * @function mGet
+		 * @param {string[]} keys - An array of string keys to search for. Each key must be a string with a maximum length of 420 characters.
+		 * @returns {Promise<Object>} A promise that resolves to an object mapping each found key to its corresponding value.
+		 * @throws {Object} Throws an error object if the input is invalid or if the database query fails.
+		 *   - If `keys` is not an array, throws an error with a `dbError` property.
+		 *   - If any key is not a string or exceeds 420 characters, throws an error with a `dbError` property.
+		 *   - If the database query fails, throws an error with a `searchKVsFailed` property containing the stack trace.
+		 */
+		mGet: _kv_mGet,
+		/**
+		* Adds a key-value pair to the storage.
+		* ALIAS of add
+		*
+		* @param {string} key - The key to add.
+		* @param {string} value - The value to associate with the key.
+		* @returns {Promise<void>} A promise that resolves when the key-value pair has been added.
+		*/
+		set: _kv_set,
+		/**
+		 * Alias of addMultiple. Adds multiple key-value pairs to the database.
+		 *
+		 * @example graph.kv.setMultiple({
+		 *    key1: { some: 'data' },
+		 *    key2: 'some string'
+		 * });
+		 *
+		 * @param {Object} dictionary - An object containing key-value pairs to be added.
+		 * @param {Object} options - Options for the batch insertion.
+		 * @param {number} [options.batchSize=settings.defaultBatchSize] - The number of key-value pairs to insert in each batch.
+		 * @returns {Promise<Object>} - The original dictionary object.
+		 * @throws {Object} - Throws an error if a key is invalid or if the database insertion fails.
+		 */
+		setMultiple: _kv_setMultiple,
 	},
 	utils: {
 		createDB: _utils_createDB,
@@ -331,5 +378,30 @@ export default {
 		 * @throws {Object} Throws an error object if input validation fails or if the database query fails.
 		 */
 		search: _vertex_search,
+		/**
+		 * ALIAS OF add. Updates a single vertex in the graph.
+		 *
+		 * @param {Object} vertex - The vertex object to be added.
+		 * @param {string} vertex.type - The type of the vertex.
+		 * @param {string} vertex.id - The ID of the vertex. If not provided, a UUID will be generated.
+		 * @param {Object} vertex.example - any other properties of the vertex.
+		 * @returns {Promise<Object>} A promise that resolves to the added vertex.
+		 */
+		update: _vertex_update,
+		/**
+		 * Alias of addMultiple. Updates multiple vertices in the database.
+		 * 
+		 * @example graph.vertices.updateMultiple([
+		 *    { id: 'this uuid will be used', type: 'Person', name: 'Alice' },
+		 *    { type: 'City', name: 'Wonderland' } // id will be generated
+		 * ]);
+		 *
+		 * @param {Array<Object>} vertices - An array of vertex objects to be updated.
+		 * @param {Object} options - Options for the batch update.
+		 * @param {number} [options.batchSize=settings.defaultBatchSize] - The number of vertices to update in each batch.
+		 * @returns {Promise<Array>} - An array of updated vertices with all properties.
+		 * @throws {Object} - Throws an error if a vertex type is invalid or if the database insertion fails.
+		 */
+		updateMultiple: _vertex_updateMultiple,
 	},
 };
