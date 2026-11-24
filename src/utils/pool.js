@@ -9,6 +9,7 @@ let isPoolEnded = false;
 function createNewPool() {
 
 	const nextPool = new Pool(settings);
+
 	nextPool.on('error', async (err) => {
 
 		console.error('Unexpected error on idle client', err);
@@ -25,7 +26,11 @@ function createNewPool() {
 
 function createPool() {
 
-	if (!pool || isPoolEnded) return createNewPool();
+	if (!pool || isPoolEnded) {
+
+		return createNewPool();
+	
+	}
 
 	return pool;
 
@@ -33,9 +38,23 @@ function createPool() {
 
 async function closePool(targetPool = pool) {
 
-	if (!targetPool) return;
-	if (targetPool === pool && isPoolEnded) return;
-	if (targetPool === pool) isPoolEnded = true;
+	if (!targetPool) {
+
+		return;
+	
+	}
+
+	if (targetPool === pool && isPoolEnded) {
+
+		return;
+	
+	}
+
+	if (targetPool === pool) {
+
+		isPoolEnded = true;
+	
+	}
 
 	try {
 
@@ -59,24 +78,29 @@ async function closePool(targetPool = pool) {
 
 }
 
+/**
+ * End the current pool if one exists. The next createPool call builds a new pool.
+ *
+ * @returns {void}
+ */
 function resetPool() {
 
 	const currentPool = pool;
+
 	pool = undefined;
 	isPoolEnded = false;
 
-	if (currentPool) {
+	if (!currentPool) {
 
-		currentPool.end().catch((err) => {
-
-			console.error('Error closing pool during reset:', err);
-		
-		});
+		return;
 	
 	}
 
-	createNewPool();
-	console.log('Pool reset with new settings');
+	currentPool.end().catch((err) => {
+
+		console.error('Error closing pool during reset:', err);
+	
+	});
 
 }
 
