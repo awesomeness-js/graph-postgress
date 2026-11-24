@@ -26,6 +26,23 @@ const settings = {
 
 let onChange = null;
 
+/**
+ * Compare two setting values, including plain objects such as ssl.
+ *
+ * @param {*} a
+ * @param {*} b
+ * @returns {boolean}
+ */
+function valuesEqual(a, b) {
+
+	if (Object.is(a, b)) return true;
+
+	if (a && b && typeof a === 'object' && typeof b === 'object') return JSON.stringify(a) === JSON.stringify(b);
+
+	return false;
+
+}
+
 function set(k, v) {
 
 	if (!(k in settings)) {
@@ -34,14 +51,18 @@ function set(k, v) {
 	
 	}
 
+	const changed = !valuesEqual(settings[k], v);
+
 	settings[k] = v;
-	if (onChange) onChange();  // trigger external callback
+	if (changed && onChange) onChange();
 	
 	return settings;
 
 }
 
 function init(newSettings = {}) {
+
+	let changed = false;
 
 	for (const key in newSettings) {
 
@@ -51,11 +72,13 @@ function init(newSettings = {}) {
 		
 		}
 
+		if (!valuesEqual(settings[key], newSettings[key])) changed = true;
+
 		settings[key] = newSettings[key];
 	
 	}
 
-	if (onChange) onChange();
+	if (changed && onChange) onChange();
 	
 	return settings;
 

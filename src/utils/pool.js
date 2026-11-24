@@ -75,9 +75,6 @@ function resetPool() {
 	
 	}
 
-	createNewPool();
-	console.log('Pool reset with new settings');
-
 }
 
 setOnChange(resetPool);
