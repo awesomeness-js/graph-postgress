@@ -35,17 +35,9 @@ let onChange = null;
  */
 function valuesEqual(a, b) {
 
-	if (Object.is(a, b)) {
+	if (Object.is(a, b)) return true;
 
-		return true;
-	
-	}
-
-	if (a && b && typeof a === 'object' && typeof b === 'object') {
-
-		return JSON.stringify(a) === JSON.stringify(b);
-	
-	}
+	if (a && b && typeof a === 'object' && typeof b === 'object') return JSON.stringify(a) === JSON.stringify(b);
 
 	return false;
 
@@ -55,19 +47,14 @@ function set(k, v) {
 
 	if (!(k in settings)) {
 
-		throw new Error('Invalid configuration parameter: ' + k);
+		throw new Error(`Invalid configuration parameter: ${k}`);
 	
 	}
 
 	const changed = !valuesEqual(settings[k], v);
 
 	settings[k] = v;
-
-	if (changed && onChange) {
-
-		onChange();
-	
-	}
+	if (changed && onChange) onChange();
 	
 	return settings;
 
@@ -81,25 +68,17 @@ function init(newSettings = {}) {
 
 		if (!(key in settings)) {
 
-			throw new Error('Invalid configuration parameter: ' + key);
+			throw new Error(`Invalid configuration parameter: ${key}`);
 		
 		}
 
-		if (!valuesEqual(settings[key], newSettings[key])) {
-
-			changed = true;
-		
-		}
+		if (!valuesEqual(settings[key], newSettings[key])) changed = true;
 
 		settings[key] = newSettings[key];
 	
 	}
 
-	if (changed && onChange) {
-
-		onChange();
-	
-	}
+	if (changed && onChange) onChange();
 	
 	return settings;
 
